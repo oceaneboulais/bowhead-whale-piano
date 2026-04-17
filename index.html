@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bowhead Whale Piano</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐋 Bowhead Whale Piano</h1>
+            <p>Play piano keys using bowhead whale sounds</p>
+        </header>
+
+        <div class="controls">
+            <div class="file-loader">
+                <label for="wav-files" class="file-label">
+                    Load Whale Sound Files (.wav)
+                </label>
+                <input type="file" id="wav-files" accept=".wav" multiple>
+                <div id="file-count" class="file-count"></div>
+            </div>
+            
+            <button id="analyze-btn" class="btn btn-primary" disabled>
+                Analyze Frequencies & Map to Piano
+            </button>
+            
+            <button id="auto-load-btn" class="btn btn-secondary">
+                Auto-Load Prepared Whale Sounds (88 files)
+            </button>
+            
+            <button id="test-sound-btn" class="btn btn-test" style="display: none;">
+                🔊 Test Sound
+            </button>
+            
+            <div id="status" class="status"></div>
+        </div>
+
+        <div id="frequency-mapping" class="frequency-mapping"></div>
+
+        <div class="piano-container">
+            <div id="piano" class="piano"></div>
+        </div>
+
+        <div class="keyboard-hints">
+            <h3>Keyboard Shortcuts</h3>
+            <p>Load whale sounds to enable keyboard shortcuts</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

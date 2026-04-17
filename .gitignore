@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.pyc
+__pycache__/
+.venv/
+venv/
+.env
+*.log
+
+# Large source files - exclude from GitHub
+wav-files/
+wav-clips-backup/
+
+# Only include the prepared 88 whale sounds in wav-clips/
