@@ -1,624 +1,624 @@
 {
-  "timestamp": "2026-04-16T07:35:53.855Z",
+  "timestamp": "2026-04-17T20:39:22.781Z",
   "seed": 42,
   "totalFiles": 88,
-  "sourceDirectory": "/Volumes/Bowhead/Shell2013_GSI_Data",
+  "sourceDirectory": "/Volumes/Bowhead/Shell2008_GSI_data",
   "files": [
     {
       "index": 1,
       "newName": "whale_sound_001.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130817T000000.WAV",
-      "originalName": "S213F0T20130817T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108K0_WAV/S108K0T20080815T000000.WAV",
+      "originalName": "S108K0T20080815T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 2,
       "newName": "whale_sound_002.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213E0_WAV/S213E0T20130927T000000.WAV",
-      "originalName": "S213E0T20130927T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108D0_WAV/S108D0T20080923T000000.WAV",
+      "originalName": "S108D0T20080923T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 3,
       "newName": "whale_sound_003.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130921T000000.WAV",
-      "originalName": "S213F0T20130921T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108C0_WAV/S108C0T20080908T000000.WAV",
+      "originalName": "S108C0T20080908T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 4,
       "newName": "whale_sound_004.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130919T000000.WAV",
-      "originalName": "S213F0T20130919T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108H0_WAV/S108H0T20080919T000000.WAV",
+      "originalName": "S108H0T20080919T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 5,
       "newName": "whale_sound_005.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130926T000000.WAV",
-      "originalName": "S213F0T20130926T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108D0_WAV/S108D0T20080918T000000.WAV",
+      "originalName": "S108D0T20080918T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 6,
       "newName": "whale_sound_006.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213B0_WAV/S213B0T20130814T000000.WAV",
-      "originalName": "S213B0T20130814T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108C0_WAV/S108C0T20080820T000000.WAV",
+      "originalName": "S108C0T20080820T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 7,
       "newName": "whale_sound_007.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213E0_WAV/S213E0T20130917T000000.WAV",
-      "originalName": "S213E0T20130917T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108J0_WAV/S108J0T20080908T000000.WAV",
+      "originalName": "S108J0T20080908T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 8,
       "newName": "whale_sound_008.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130905T000000.WAV",
-      "originalName": "S213F0T20130905T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108J0_WAV/S108J0T20080912T000000.WAV",
+      "originalName": "S108J0T20080912T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 9,
       "newName": "whale_sound_009.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213G0_WAV/S213G0T20130904T000000.WAV",
-      "originalName": "S213G0T20130904T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108H0_WAV/S108H0T20080827T000000.WAV",
+      "originalName": "S108H0T20080827T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 10,
       "newName": "whale_sound_010.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213D0_WAV/S213D0T20130925T000000.WAV",
-      "originalName": "S213D0T20130925T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108H0_WAV/S108H0T20080908T000000.WAV",
+      "originalName": "S108H0T20080908T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 11,
       "newName": "whale_sound_011.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130920T000000.WAV",
-      "originalName": "S213F0T20130920T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108C0_WAV/S108C0T20080818T000000.WAV",
+      "originalName": "S108C0T20080818T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 12,
       "newName": "whale_sound_012.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213B0_WAV/S213B0T20130923T000000.WAV",
-      "originalName": "S213B0T20130923T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108J0_WAV/S108J0T20081003T000000.WAV",
+      "originalName": "S108J0T20081003T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 13,
       "newName": "whale_sound_013.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213C0_WAV/S213C0T20130907T000000.WAV",
-      "originalName": "S213C0T20130907T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108G0_WAV/S108G0T20080904T000000.WAV",
+      "originalName": "S108G0T20080904T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 14,
       "newName": "whale_sound_014.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130822T000000.WAV",
-      "originalName": "S213F0T20130822T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108C0_WAV/S108C0T20080902T000000.WAV",
+      "originalName": "S108C0T20080902T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 15,
       "newName": "whale_sound_015.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213B0_WAV/S213B0T20131002T000000.WAV",
-      "originalName": "S213B0T20131002T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108I0_WAV/S108I0T20080904T000000.WAV",
+      "originalName": "S108I0T20080904T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 16,
       "newName": "whale_sound_016.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213A0_WAV/S213A0T20130825T000000.WAV",
-      "originalName": "S213A0T20130825T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108H0_WAV/S108H0T20080815T000000.WAV",
+      "originalName": "S108H0T20080815T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 17,
       "newName": "whale_sound_017.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130918T000000.WAV",
-      "originalName": "S213F0T20130918T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108K0_WAV/S108K0T20080908T000000.WAV",
+      "originalName": "S108K0T20080908T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 18,
       "newName": "whale_sound_018.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213D0_WAV/S213D0T20130826T000000.WAV",
-      "originalName": "S213D0T20130826T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S108gsif/S108A0_WAV/S108A0T20080829T000000.WAV",
+      "originalName": "S108A0T20080829T000000.WAV",
+      "folder": "S108gsif"
     },
     {
       "index": 19,
       "newName": "whale_sound_019.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213G0_WAV/S213G0T20130817T000000.WAV",
-      "originalName": "S213G0T20130817T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208B0_WAV/S208B0T20080904T000000.WAV",
+      "originalName": "S208B0T20080904T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 20,
       "newName": "whale_sound_020.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213E0_WAV/S213E0T20130924T000000.WAV",
-      "originalName": "S213E0T20130924T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208F0_WAV/S208F0T20080923T000000.WAV",
+      "originalName": "S208F0T20080923T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 21,
       "newName": "whale_sound_021.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213A0_WAV/S213A0T20130929T000000.WAV",
-      "originalName": "S213A0T20130929T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208C0_WAV/S208C0T20080819T000000.WAV",
+      "originalName": "S208C0T20080819T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 22,
       "newName": "whale_sound_022.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S213gsif/S213F0_WAV/S213F0T20130820T000000.WAV",
-      "originalName": "S213F0T20130820T000000.WAV",
-      "folder": "S213gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208B0_WAV/S208B0T20080817T000000.WAV",
+      "originalName": "S208B0T20080817T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 23,
       "newName": "whale_sound_023.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130901T000000.WAV",
-      "originalName": "S313G0T20130901T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208F0_WAV/S208F0T20081006T000000.WAV",
+      "originalName": "S208F0T20081006T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 24,
       "newName": "whale_sound_024.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130830T000000.WAV",
-      "originalName": "S313G0T20130830T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208E0_WAV/S208E0T20080909T000000.WAV",
+      "originalName": "S208E0T20080909T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 25,
       "newName": "whale_sound_025.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313F0_WAV/S313F0T20130911T000000.WAV",
-      "originalName": "S313F0T20130911T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208D0_WAV/S208D0T20080823T000000.WAV",
+      "originalName": "S208D0T20080823T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 26,
       "newName": "whale_sound_026.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313E0_WAV/S313E0T20130917T000000.WAV",
-      "originalName": "S313E0T20130917T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208F0_WAV/S208F0T20080925T000000.WAV",
+      "originalName": "S208F0T20080925T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 27,
       "newName": "whale_sound_027.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130812T000000.WAV",
-      "originalName": "S313G0T20130812T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208A0_WAV/S208A0T20080828T000000.WAV",
+      "originalName": "S208A0T20080828T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 28,
       "newName": "whale_sound_028.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130810T000000.WAV",
-      "originalName": "S313G0T20130810T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208F0_WAV/S208F0T20080824T000000.WAV",
+      "originalName": "S208F0T20080824T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 29,
       "newName": "whale_sound_029.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313A0_WAV/S313A0T20130817T000000.WAV",
-      "originalName": "S313A0T20130817T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208F0_WAV/S208F0T20081002T000000.WAV",
+      "originalName": "S208F0T20081002T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 30,
       "newName": "whale_sound_030.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313C0_WAV/S313C0T20130912T000000.WAV",
-      "originalName": "S313C0T20130912T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208F0_WAV/S208F0T20080818T000000.WAV",
+      "originalName": "S208F0T20080818T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 31,
       "newName": "whale_sound_031.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313E0_WAV/S313E0T20130920T000000.WAV",
-      "originalName": "S313E0T20130920T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208B0_WAV/S208B0T20080918T000000.WAV",
+      "originalName": "S208B0T20080918T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 32,
       "newName": "whale_sound_032.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313D0_WAV/S313D0T20130924T000000.WAV",
-      "originalName": "S313D0T20130924T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208C0_WAV/S208C0T20080914T000000.WAV",
+      "originalName": "S208C0T20080914T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 33,
       "newName": "whale_sound_033.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313A0_WAV/S313A0T20130822T000000.WAV",
-      "originalName": "S313A0T20130822T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208C0_WAV/S208C0T20080930T000000.WAV",
+      "originalName": "S208C0T20080930T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 34,
       "newName": "whale_sound_034.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130822T000000.WAV",
-      "originalName": "S313G0T20130822T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208D0_WAV/S208D0T20080820T000000.WAV",
+      "originalName": "S208D0T20080820T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 35,
       "newName": "whale_sound_035.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130904T000000.WAV",
-      "originalName": "S313G0T20130904T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208B0_WAV/S208B0T20080907T000000.WAV",
+      "originalName": "S208B0T20080907T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 36,
       "newName": "whale_sound_036.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313E0_WAV/S313E0T20130909T000000.WAV",
-      "originalName": "S313E0T20130909T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S208gsif/S208A0_WAV/S208A0T20080907T000000.WAV",
+      "originalName": "S208A0T20080907T000000.WAV",
+      "folder": "S208gsif"
     },
     {
       "index": 37,
       "newName": "whale_sound_037.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130819T000000.WAV",
-      "originalName": "S313G0T20130819T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308B0_WAV/S308B0T20080925T000000.WAV",
+      "originalName": "S308B0T20080925T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 38,
       "newName": "whale_sound_038.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313B0_WAV/S313B0T20130919T000000.WAV",
-      "originalName": "S313B0T20130919T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308D0_WAV/S308D0T20080826T000000.WAV",
+      "originalName": "S308D0T20080826T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 39,
       "newName": "whale_sound_039.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313B0_WAV/S313B0T20130924T000000.WAV",
-      "originalName": "S313B0T20130924T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308E0_WAV/S308E0T20081004T000000.WAV",
+      "originalName": "S308E0T20081004T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 40,
       "newName": "whale_sound_040.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313F0_WAV/S313F0T20130807T210020.WAV",
-      "originalName": "S313F0T20130807T210020.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308A0_WAV/S308A0T20080924T000000.WAV",
+      "originalName": "S308A0T20080924T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 41,
       "newName": "whale_sound_041.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313C0_WAV/S313C0T20130901T000000.WAV",
-      "originalName": "S313C0T20130901T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308D0_WAV/S308D0T20080925T000000.WAV",
+      "originalName": "S308D0T20080925T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 42,
       "newName": "whale_sound_042.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313D0_WAV/S313D0T20130925T000000.WAV",
-      "originalName": "S313D0T20130925T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308B0_WAV/S308B0T20080830T000000.WAV",
+      "originalName": "S308B0T20080830T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 43,
       "newName": "whale_sound_043.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313A0_WAV/S313A0T20130926T000000.WAV",
-      "originalName": "S313A0T20130926T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308D0_WAV/S308D0T20081003T000000.WAV",
+      "originalName": "S308D0T20081003T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 44,
       "newName": "whale_sound_044.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S313gsif/S313G0_WAV/S313G0T20130910T000000.WAV",
-      "originalName": "S313G0T20130910T000000.WAV",
-      "folder": "S313gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308F0_WAV/S308F0T20080927T000000.WAV",
+      "originalName": "S308F0T20080927T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 45,
       "newName": "whale_sound_045.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413A1_WAV/S413A1T20130915T000000.WAV",
-      "originalName": "S413A1T20130915T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308G0_WAV/S308G0T20081005T000000.WAV",
+      "originalName": "S308G0T20081005T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 46,
       "newName": "whale_sound_046.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413E1_WAV/S413E1T20130815T000000.WAV",
-      "originalName": "S413E1T20130815T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308A0_WAV/S308A0T20080923T000000.WAV",
+      "originalName": "S308A0T20080923T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 47,
       "newName": "whale_sound_047.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413M0_WAV/S413M0T20130825T000000.WAV",
-      "originalName": "S413M0T20130825T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308E0_WAV/S308E0T20081001T000000.WAV",
+      "originalName": "S308E0T20081001T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 48,
       "newName": "whale_sound_048.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413D0_WAV/S413D0T20130902T000000.WAV",
-      "originalName": "S413D0T20130902T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308C0_WAV/S308C0T20080917T000000.WAV",
+      "originalName": "S308C0T20080917T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 49,
       "newName": "whale_sound_049.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413E1_WAV/S413E1T20130906T000000.WAV",
-      "originalName": "S413E1T20130906T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308E0_WAV/S308E0T20080923T000000.WAV",
+      "originalName": "S308E0T20080923T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 50,
       "newName": "whale_sound_050.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413G1_WAV/S413G1T20130907T000000.WAV",
-      "originalName": "S413G1T20130907T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308E0_WAV/S308E0T20080905T000000.WAV",
+      "originalName": "S308E0T20080905T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 51,
       "newName": "whale_sound_051.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413M0_WAV/S413M0T20130831T000000.WAV",
-      "originalName": "S413M0T20130831T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308E0_WAV/S308E0T20080907T000000.WAV",
+      "originalName": "S308E0T20080907T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 52,
       "newName": "whale_sound_052.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413B0_WAV/S413B0T20130903T000000.WAV",
-      "originalName": "S413B0T20130903T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308G0_WAV/S308G0T20080825T000000.WAV",
+      "originalName": "S308G0T20080825T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 53,
       "newName": "whale_sound_053.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413C1_WAV/S413C1T20130811T000000.WAV",
-      "originalName": "S413C1T20130811T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308G0_WAV/S308G0T20080830T000000.WAV",
+      "originalName": "S308G0T20080830T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 54,
       "newName": "whale_sound_054.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413J0_WAV/S413J0T20130826T000000.WAV",
-      "originalName": "S413J0T20130826T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S308gsif/S308A0_WAV/S308A0T20080911T000000.WAV",
+      "originalName": "S308A0T20080911T000000.WAV",
+      "folder": "S308gsif"
     },
     {
       "index": 55,
       "newName": "whale_sound_055.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413L0_WAV/S413L0T20130817T000000.WAV",
-      "originalName": "S413L0T20130817T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408B0_WAV/S408B0T20080925T000000.WAV",
+      "originalName": "S408B0T20080925T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 56,
       "newName": "whale_sound_056.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413A1_WAV/S413A1T20130806T120016.WAV",
-      "originalName": "S413A1T20130806T120016.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408A0_WAV/S408A0T20080822T000000.WAV",
+      "originalName": "S408A0T20080822T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 57,
       "newName": "whale_sound_057.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413F0_WAV/S413F0T20130827T000000.WAV",
-      "originalName": "S413F0T20130827T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408A0_WAV/S408A0T20080824T000000.WAV",
+      "originalName": "S408A0T20080824T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 58,
       "newName": "whale_sound_058.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413M0_WAV/S413M0T20130907T000000.WAV",
-      "originalName": "S413M0T20130907T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408B0_WAV/S408B0T20080904T000000.WAV",
+      "originalName": "S408B0T20080904T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 59,
       "newName": "whale_sound_059.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413K0_WAV/S413K0T20130818T000000.WAV",
-      "originalName": "S413K0T20130818T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408C0_WAV/S408C0T20080905T000000.WAV",
+      "originalName": "S408C0T20080905T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 60,
       "newName": "whale_sound_060.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413I0_WAV/S413I0T20130825T000000.WAV",
-      "originalName": "S413I0T20130825T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408A0_WAV/S408A0T20080906T000000.WAV",
+      "originalName": "S408A0T20080906T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 61,
       "newName": "whale_sound_061.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413M0_WAV/S413M0T20130917T000000.WAV",
-      "originalName": "S413M0T20130917T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408E0_WAV/S408E0T20081004T000000.WAV",
+      "originalName": "S408E0T20081004T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 62,
       "newName": "whale_sound_062.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413J0_WAV/S413J0T20130926T000000.WAV",
-      "originalName": "S413J0T20130926T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408B0_WAV/S408B0T20080926T000000.WAV",
+      "originalName": "S408B0T20080926T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 63,
       "newName": "whale_sound_063.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413J0_WAV/S413J0T20130917T000000.WAV",
-      "originalName": "S413J0T20130917T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408D0_WAV/S408D0T20080921T000000.WAV",
+      "originalName": "S408D0T20080921T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 64,
       "newName": "whale_sound_064.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413E1_WAV/S413E1T20130907T000000.WAV",
-      "originalName": "S413E1T20130907T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408E0_WAV/S408E0T20080912T000000.WAV",
+      "originalName": "S408E0T20080912T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 65,
       "newName": "whale_sound_065.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413K0_WAV/S413K0T20130808T000000.WAV",
-      "originalName": "S413K0T20130808T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408C0_WAV/S408C0T20080926T000000.WAV",
+      "originalName": "S408C0T20080926T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 66,
       "newName": "whale_sound_066.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S413gsif/S413C1_WAV/S413C1T20130812T000000.WAV",
-      "originalName": "S413C1T20130812T000000.WAV",
-      "folder": "S413gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408E0_WAV/S408E0T20080826T000000.WAV",
+      "originalName": "S408E0T20080826T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 67,
       "newName": "whale_sound_067.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513D0_WAV/S513D0T20130912T000000.WAV",
-      "originalName": "S513D0T20130912T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408B0_WAV/S408B0T20080826T000000.WAV",
+      "originalName": "S408B0T20080826T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 68,
       "newName": "whale_sound_068.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513B0_WAV/S513B0T20130824T000000.WAV",
-      "originalName": "S513B0T20130824T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408E0_WAV/S408E0T20080902T000000.WAV",
+      "originalName": "S408E0T20080902T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 69,
       "newName": "whale_sound_069.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513F0_WAV/S513F0T20130811T000000.WAV",
-      "originalName": "S513F0T20130811T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408E0_WAV/S408E0T20080928T000000.WAV",
+      "originalName": "S408E0T20080928T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 70,
       "newName": "whale_sound_070.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513B0_WAV/S513B0T20130829T000000.WAV",
-      "originalName": "S513B0T20130829T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408B0_WAV/S408B0T20080913T000000.WAV",
+      "originalName": "S408B0T20080913T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 71,
       "newName": "whale_sound_071.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513C0_WAV/S513C0T20130812T000000.WAV",
-      "originalName": "S513C0T20130812T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S408gsif/S408D0_WAV/S408D0T20080910T000000.WAV",
+      "originalName": "S408D0T20080910T000000.WAV",
+      "folder": "S408gsif"
     },
     {
       "index": 72,
       "newName": "whale_sound_072.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513C0_WAV/S513C0T20130910T000000.WAV",
-      "originalName": "S513C0T20130910T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508C0_WAV/S508C0T20080906T000000.WAV",
+      "originalName": "S508C0T20080906T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 73,
       "newName": "whale_sound_073.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513F0_WAV/S513F0T20130830T000000.WAV",
-      "originalName": "S513F0T20130830T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508G0_WAV/S508G0T20080825T000000.WAV",
+      "originalName": "S508G0T20080825T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 74,
       "newName": "whale_sound_074.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513A0_WAV/S513A0T20130922T000000.WAV",
-      "originalName": "S513A0T20130922T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508C0_WAV/S508C0T20080829T000000.WAV",
+      "originalName": "S508C0T20080829T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 75,
       "newName": "whale_sound_075.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513D0_WAV/S513D0T20130830T000000.WAV",
-      "originalName": "S513D0T20130830T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508B0_WAV/S508B0T20080927T000000.WAV",
+      "originalName": "S508B0T20080927T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 76,
       "newName": "whale_sound_076.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513G0_WAV/S513G0T20130831T000000.WAV",
-      "originalName": "S513G0T20130831T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508C0_WAV/S508C0T20080828T000000.WAV",
+      "originalName": "S508C0T20080828T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 77,
       "newName": "whale_sound_077.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513C0_WAV/S513C0T20130916T000000.WAV",
-      "originalName": "S513C0T20130916T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508F0_WAV/S508F0T20080913T000000.WAV",
+      "originalName": "S508F0T20080913T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 78,
       "newName": "whale_sound_078.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513C0_WAV/S513C0T20130830T000000.WAV",
-      "originalName": "S513C0T20130830T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508A0_WAV/S508A0T20080819T072522.WAV",
+      "originalName": "S508A0T20080819T072522.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 79,
       "newName": "whale_sound_079.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513B0_WAV/S513B0T20130910T000000.WAV",
-      "originalName": "S513B0T20130910T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508A0_WAV/S508A0T20080930T000000.WAV",
+      "originalName": "S508A0T20080930T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 80,
       "newName": "whale_sound_080.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513A0_WAV/S513A0T20130824T000000.WAV",
-      "originalName": "S513A0T20130824T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508E0_WAV/S508E0T20080911T000000.WAV",
+      "originalName": "S508E0T20080911T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 81,
       "newName": "whale_sound_081.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513E0_WAV/S513E0T20130810T000000.WAV",
-      "originalName": "S513E0T20130810T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508E0_WAV/S508E0T20080915T000000.WAV",
+      "originalName": "S508E0T20080915T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 82,
       "newName": "whale_sound_082.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513C0_WAV/S513C0T20130927T000000.WAV",
-      "originalName": "S513C0T20130927T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508E0_WAV/S508E0T20080916T000000.WAV",
+      "originalName": "S508E0T20080916T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 83,
       "newName": "whale_sound_083.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513A0_WAV/S513A0T20130805T083016.WAV",
-      "originalName": "S513A0T20130805T083016.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508D0_WAV/S508D0T20081002T000000.WAV",
+      "originalName": "S508D0T20081002T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 84,
       "newName": "whale_sound_084.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513E0_WAV/S513E0T20130823T000000.WAV",
-      "originalName": "S513E0T20130823T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508D0_WAV/S508D0T20080928T000000.WAV",
+      "originalName": "S508D0T20080928T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 85,
       "newName": "whale_sound_085.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513E0_WAV/S513E0T20130908T000000.WAV",
-      "originalName": "S513E0T20130908T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508G0_WAV/S508G0T20080920T000000.WAV",
+      "originalName": "S508G0T20080920T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 86,
       "newName": "whale_sound_086.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513D0_WAV/S513D0T20130823T000000.WAV",
-      "originalName": "S513D0T20130823T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508B0_WAV/S508B0T20080828T000000.WAV",
+      "originalName": "S508B0T20080828T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 87,
       "newName": "whale_sound_087.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513D0_WAV/S513D0T20130914T000000.WAV",
-      "originalName": "S513D0T20130914T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508A0_WAV/S508A0T20080925T000000.WAV",
+      "originalName": "S508A0T20080925T000000.WAV",
+      "folder": "S508gsif"
     },
     {
       "index": 88,
       "newName": "whale_sound_088.WAV",
-      "originalPath": "/Volumes/Bowhead/Shell2013_GSI_Data/S513gsif/S513C0_WAV/S513C0T20130827T000000.WAV",
-      "originalName": "S513C0T20130827T000000.WAV",
-      "folder": "S513gsif"
+      "originalPath": "/Volumes/Bowhead/Shell2008_GSI_data/S508gsif/S508G0_WAV/S508G0T20080913T000000.WAV",
+      "originalName": "S508G0T20080913T000000.WAV",
+      "folder": "S508gsif"
     }
   ]
 }
