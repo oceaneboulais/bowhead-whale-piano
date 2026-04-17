@@ -778,7 +778,6 @@ class BowheadPiano {
         
         console.log(`Populated frequency reference table with ${PIANO_FREQUENCIES.length} keys`);
     }
-    }
 }
 
 // Initialize the app
