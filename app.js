@@ -49,6 +49,7 @@ class BowheadPiano {
     init() {
         this.setupEventListeners();
         this.renderPiano();
+        this.populateFrequencyReference();
     }
 
     setupEventListeners() {
@@ -721,6 +722,72 @@ class BowheadPiano {
         const status = document.getElementById('status');
         status.textContent = message;
         status.className = `status ${type}`;
+    }
+
+    populateFrequencyReference() {
+        const tableBody = document.getElementById('frequency-reference-table');
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        // Create rows with 2 entries per row for compact display
+        for (let i = 0; i < PIANO_FREQUENCIES.length; i += 2) {
+            const row = document.createElement('tr');
+            
+            // First entry
+            const key1 = i + 1;
+            const note1 = NOTE_NAMES[i];
+            const freq1 = PIANO_FREQUENCIES[i];
+            
+            const cell1Key = document.createElement('td');
+            cell1Key.textContent = key1;
+            
+            const cell1Note = document.createElement('td');
+            cell1Note.textContent = note1;
+            
+            const cell1Freq = document.createElement('td');
+            cell1Freq.textContent = freq1.toFixed(2);
+            
+            // Highlight special notes
+            if (note1 === 'A4') {
+                row.classList.add('note-a4');
+                cell1Note.innerHTML = `${note1} <small>(Concert A)</small>`;
+            } else if (note1 === 'C4') {
+                row.classList.add('note-c4');
+                cell1Note.innerHTML = `${note1} <small>(Middle C)</small>`;
+            }
+            
+            row.appendChild(cell1Key);
+            row.appendChild(cell1Note);
+            row.appendChild(cell1Freq);
+            
+            // Second entry (if exists)
+            if (i + 1 < PIANO_FREQUENCIES.length) {
+                const key2 = i + 2;
+                const note2 = NOTE_NAMES[i + 1];
+                const freq2 = PIANO_FREQUENCIES[i + 1];
+                
+                const cell2Key = document.createElement('td');
+                cell2Key.textContent = key2;
+                
+                const cell2Note = document.createElement('td');
+                cell2Note.textContent = note2;
+                
+                const cell2Freq = document.createElement('td');
+                cell2Freq.textContent = freq2.toFixed(2);
+                
+                row.appendChild(cell2Key);
+                row.appendChild(cell2Note);
+                row.appendChild(cell2Freq);
+            } else {
+                // Add empty cells if odd number of keys
+                row.appendChild(document.createElement('td'));
+                row.appendChild(document.createElement('td'));
+                row.appendChild(document.createElement('td'));
+            }
+            
+            tableBody.appendChild(row);
+        }
     }
 }
 

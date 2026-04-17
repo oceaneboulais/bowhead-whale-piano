@@ -315,3 +315,86 @@ header p {
     .black-key.pos-4 { left: 174px; }
     .black-key.pos-5 { left: 216px; }
 }
+
+/* Frequency Reference Dropdown */
+.frequency-reference {
+    margin: 20px 0;
+    background: #f8f9fa;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.frequency-reference summary {
+    padding: 15px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #667eea;
+    background: white;
+    transition: background 0.3s;
+    user-select: none;
+}
+
+.frequency-reference summary:hover {
+    background: #f8f9fa;
+}
+
+.frequency-reference[open] summary {
+    background: #667eea;
+    color: white;
+}
+
+.frequency-table-container {
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.frequency-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+.frequency-table thead {
+    position: sticky;
+    top: 0;
+    background: #667eea;
+    color: white;
+    z-index: 1;
+}
+
+.frequency-table th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.frequency-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.frequency-table tbody tr:hover {
+    background: #f1f3f5;
+}
+
+.frequency-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.frequency-table tbody tr:nth-child(even):hover {
+    background: #e9ecef;
+}
+
+/* Highlight special notes */
+.frequency-table .note-a4 {
+    background: #fff3cd !important;
+    font-weight: 600;
+}
+
+.frequency-table .note-c4 {
+    background: #cfe2ff !important;
+    font-weight: 600;
+}
+
