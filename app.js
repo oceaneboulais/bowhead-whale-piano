@@ -89,7 +89,7 @@ class BowheadPiano {
         
         try {
             // Load the manifest to get file list
-            const response = await fetch('wav-files/manifest.json');
+            const response = await fetch('manifest.json');
             if (!response.ok) {
                 throw new Error('Manifest file not found. Please run prepare-whale-sounds.js first.');
             }
