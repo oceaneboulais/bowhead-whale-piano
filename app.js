@@ -726,7 +726,10 @@ class BowheadPiano {
 
     populateFrequencyReference() {
         const tableBody = document.getElementById('frequency-reference-table');
-        if (!tableBody) return;
+        if (!tableBody) {
+            console.error('Frequency reference table body not found');
+            return;
+        }
         
         tableBody.innerHTML = '';
         
@@ -739,27 +742,12 @@ class BowheadPiano {
             const note1 = NOTE_NAMES[i];
             const freq1 = PIANO_FREQUENCIES[i];
             
-            const cell1Key = document.createElement('td');
-            cell1Key.textContent = key1;
-            
-            const cell1Note = document.createElement('td');
-            cell1Note.textContent = note1;
-            
-            const cell1Freq = document.createElement('td');
-            cell1Freq.textContent = freq1.toFixed(2);
-            
-            // Highlight special notes
-            if (note1 === 'A4') {
-                row.classList.add('note-a4');
-                cell1Note.innerHTML = `${note1} <small>(Concert A)</small>`;
-            } else if (note1 === 'C4') {
-                row.classList.add('note-c4');
-                cell1Note.innerHTML = `${note1} <small>(Middle C)</small>`;
-            }
-            
-            row.appendChild(cell1Key);
-            row.appendChild(cell1Note);
-            row.appendChild(cell1Freq);
+            // Add first key's cells
+            row.innerHTML = `
+                <td>${key1}</td>
+                <td>${note1}${note1 === 'C4' ? ' <small>(Middle C)</small>' : note1 === 'A4' ? ' <small>(440 Hz)</small>' : ''}</td>
+                <td>${freq1.toFixed(2)}</td>
+            `;
             
             // Second entry (if exists)
             if (i + 1 < PIANO_FREQUENCIES.length) {
@@ -767,27 +755,29 @@ class BowheadPiano {
                 const note2 = NOTE_NAMES[i + 1];
                 const freq2 = PIANO_FREQUENCIES[i + 1];
                 
-                const cell2Key = document.createElement('td');
-                cell2Key.textContent = key2;
-                
-                const cell2Note = document.createElement('td');
-                cell2Note.textContent = note2;
-                
-                const cell2Freq = document.createElement('td');
-                cell2Freq.textContent = freq2.toFixed(2);
-                
-                row.appendChild(cell2Key);
-                row.appendChild(cell2Note);
-                row.appendChild(cell2Freq);
+                row.innerHTML += `
+                    <td>${key2}</td>
+                    <td>${note2}</td>
+                    <td>${freq2.toFixed(2)}</td>
+                `;
             } else {
                 // Add empty cells if odd number of keys
-                row.appendChild(document.createElement('td'));
-                row.appendChild(document.createElement('td'));
-                row.appendChild(document.createElement('td'));
+                row.innerHTML += '<td></td><td></td><td></td>';
+            }
+            
+            // Highlight special notes
+            if (note1 === 'A4' || (i + 1 < PIANO_FREQUENCIES.length && NOTE_NAMES[i + 1] === 'A4')) {
+                row.classList.add('note-a4');
+            }
+            if (note1 === 'C4' || (i + 1 < PIANO_FREQUENCIES.length && NOTE_NAMES[i + 1] === 'C4')) {
+                row.classList.add('note-c4');
             }
             
             tableBody.appendChild(row);
         }
+        
+        console.log(`Populated frequency reference table with ${PIANO_FREQUENCIES.length} keys`);
+    }
     }
 }
 
