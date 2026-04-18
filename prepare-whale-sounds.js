@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const SOURCE_DIR = '/Volumes/Bowhead/Shell2013_GSI_Data';
+const SOURCE_DIR = '/Volumes/Bowhead/Shell2008_GSI_data';
 const OUTPUT_DIR = path.join(__dirname, 'wav-files');
 const NUM_FILES_TO_SELECT = 88; // 88 piano keys
 const RANDOM_SEED = 42;
