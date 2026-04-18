@@ -570,12 +570,21 @@ class BowheadPiano {
             const source = this.audioContext.createBufferSource();
             source.buffer = buffer;
             
-            // Add a gain node for volume control
+            // Add a gain node for volume boost
             const gainNode = this.audioContext.createGain();
-            gainNode.gain.value = 0.8; // 80% volume
+            gainNode.gain.value = 4.0; // 400% volume boost for whale sounds
+            
+            // Add a compressor to prevent clipping at high volumes
+            const compressor = this.audioContext.createDynamicsCompressor();
+            compressor.threshold.value = -20;
+            compressor.knee.value = 30;
+            compressor.ratio.value = 12;
+            compressor.attack.value = 0.003;
+            compressor.release.value = 0.25;
             
             source.connect(gainNode);
-            gainNode.connect(this.audioContext.destination);
+            gainNode.connect(compressor);
+            compressor.connect(this.audioContext.destination);
             
             // Auto-cleanup when finished
             source.onended = () => {
