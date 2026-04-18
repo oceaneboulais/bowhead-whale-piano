@@ -307,6 +307,107 @@ header p {
     color: #666;
 }
 
+/* README Section */
+.readme {
+    margin: 20px 0;
+    background: linear-gradient(135deg, #e8eef7 0%, #f5f7fa 100%);
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.readme summary {
+    padding: 16px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.15em;
+    color: #667eea;
+    background: white;
+    transition: all 0.3s;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.readme summary::-webkit-details-marker {
+    display: none;
+}
+
+.readme summary::before {
+    content: '▼';
+    display: inline-block;
+    transition: transform 0.3s;
+    font-size: 0.9em;
+}
+
+.readme:not([open]) summary::before {
+    transform: rotate(-90deg);
+}
+
+.readme summary:hover {
+    background: #f8f9fa;
+    color: #5568d3;
+}
+
+.readme[open] summary {
+    background: #667eea;
+    color: white;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.readme-content {
+    padding: 25px;
+    background: white;
+    color: #333;
+    line-height: 1.7;
+}
+
+.readme-content h3 {
+    color: #667eea;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.readme-content h3:not(:first-child) {
+    margin-top: 25px;
+}
+
+.readme-content ol {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+.readme-content ol li {
+    margin: 10px 0;
+    color: #444;
+}
+
+.readme-content ol li strong {
+    color: #667eea;
+}
+
+.readme-content p {
+    margin: 12px 0;
+    color: #555;
+}
+
+.readme-content .tip {
+    background: #fff9e6;
+    border-left: 4px solid #ffc107;
+    padding: 12px 15px;
+    margin: 20px 0 0 0;
+    border-radius: 4px;
+    font-size: 0.95em;
+}
+
+.readme-content .tip strong {
+    color: #f57c00;
+}
+
 /* Landscape Orientation Prompt */
 .orientation-prompt {
     display: none;
@@ -426,6 +527,33 @@ header p {
         padding: 15px;
         font-size: 0.9em;
     }
+    
+    .readme {
+        margin: 15px 0;
+    }
+    
+    .readme summary {
+        padding: 12px 15px;
+        font-size: 1em;
+    }
+    
+    .readme-content {
+        padding: 15px;
+        font-size: 0.9em;
+    }
+    
+    .readme-content h3 {
+        font-size: 1em;
+    }
+    
+    .readme-content ol {
+        padding-left: 20px;
+    }
+    
+    .readme-content .tip {
+        padding: 10px 12px;
+        font-size: 0.85em;
+    }
 }
 
 /* Mobile landscape mode - optimal for piano */
@@ -529,6 +657,40 @@ header p {
     .keyboard-hints h3 {
         font-size: 1em;
         margin-bottom: 5px;
+    }
+    
+    .readme {
+        margin: 10px 0;
+    }
+    
+    .readme summary {
+        padding: 10px 15px;
+        font-size: 0.95em;
+    }
+    
+    .readme-content {
+        padding: 15px;
+        font-size: 0.85em;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .readme-content h3 {
+        font-size: 0.95em;
+        margin-bottom: 10px;
+    }
+    
+    .readme-content ol {
+        padding-left: 20px;
+    }
+    
+    .readme-content ol li {
+        margin: 8px 0;
+    }
+    
+    .readme-content .tip {
+        padding: 8px 10px;
+        font-size: 0.8em;
     }
 }
 
