@@ -408,6 +408,18 @@ header p {
     color: #f57c00;
 }
 
+.readme-content a {
+    color: #667eea;
+    text-decoration: none;
+    border-bottom: 1px dotted #667eea;
+    transition: all 0.2s;
+}
+
+.readme-content a:hover {
+    color: #5568d3;
+    border-bottom: 1px solid #5568d3;
+}
+
 /* Landscape Orientation Prompt */
 .orientation-prompt {
     display: none;
