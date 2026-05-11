@@ -572,7 +572,7 @@ class BowheadPiano {
             
             // Add a gain node for volume boost
             const gainNode = this.audioContext.createGain();
-            gainNode.gain.value = 4.0; // 400% volume boost for whale sounds
+            gainNode.gain.value = 5.0; // 500% volume boost for whale sounds
             
             // Add a compressor to prevent clipping at high volumes
             const compressor = this.audioContext.createDynamicsCompressor();
