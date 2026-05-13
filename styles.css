@@ -121,6 +121,91 @@ header p {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+.btn-makey {
+    background: #6c5ce7;
+    color: white;
+}
+
+.btn-makey:hover:not(:disabled) {
+    background: #5a4bd4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108,92,231,0.4);
+}
+
+.btn-makey.active {
+    background: #00b894;
+    box-shadow: 0 0 12px rgba(0,184,148,0.5);
+}
+
+.midi-status {
+    font-size: 0.85em;
+    color: #6c5ce7;
+    margin-top: 6px;
+    min-height: 1.2em;
+}
+
+.makey-diagram {
+    background: #1a1a2e;
+    color: #eee;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 12px 0;
+}
+
+.makey-diagram h3 {
+    margin: 0 0 12px;
+    color: #a29bfe;
+    font-size: 1em;
+}
+
+.makey-layout {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.makey-section {
+    flex: 1;
+    min-width: 220px;
+}
+
+.makey-label {
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #a29bfe;
+    margin-bottom: 8px;
+}
+
+.makey-keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.makey-key {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.makey-key kbd {
+    background: #2d3436;
+    border: 1px solid #636e72;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.85em;
+    color: #dfe6e9;
+    min-width: 38px;
+    text-align: center;
+}
+
+.makey-key span {
+    font-size: 0.75em;
+    color: #fdcb6e;
+}
+
 .btn:disabled {
     background: #ccc;
     cursor: not-allowed;

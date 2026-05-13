@@ -1,6 +1,22 @@
 // Bowhead Whale Piano App
 // Maps whale sounds to piano keys based on frequency analysis
 
+// Makey Makey default key outputs mapped to a C pentatonic scale (C3–C5)
+// Front panel: Space ← ↓ ↑ →   |   Back panel: W A S D F G
+const MAKEY_MAKEY_MAP = {
+    ' ':          27,  // Space   → C3  (130 Hz)
+    'arrowleft':  29,  // ←       → D3  (147 Hz)
+    'arrowdown':  31,  // ↓       → E3  (165 Hz)
+    'arrowup':    34,  // ↑       → G3  (196 Hz)
+    'arrowright': 36,  // →       → A3  (220 Hz)
+    'a':          39,  // A       → C4  (262 Hz)
+    's':          41,  // S       → D4  (294 Hz)
+    'd':          43,  // D       → E4  (330 Hz)
+    'f':          46,  // F       → G4  (392 Hz)
+    'g':          48,  // G       → A4  (440 Hz)
+    'w':          51,  // W       → C5  (523 Hz)
+};
+
 // Piano key frequencies (A0 to C8 - 88 keys)
 const PIANO_FREQUENCIES = [
     27.50, 29.14, 30.87, 32.70, 34.65, 36.71, 38.89, 41.20, 43.65, 46.25, 49.00, 51.91, // A0-G#0
@@ -42,6 +58,9 @@ class BowheadPiano {
         this.frequencyMap = new Map(); // Maps keyIndex to whale file
         this.activeSources = new Map(); // Maps keyIndex to active audio sources
         this.keyboardToPianoMap = new Map(); // Maps keyboard keys to piano key indices
+        this.makeyMakeyMode = false;
+        this.midiOutput = null;
+        this.midiAccess = null;
         
         this.init();
     }
@@ -50,6 +69,7 @@ class BowheadPiano {
         this.setupEventListeners();
         this.renderPiano();
         this.populateFrequencyReference();
+        this.initMidi();
     }
 
     setupEventListeners() {
@@ -57,11 +77,15 @@ class BowheadPiano {
         const analyzeBtn = document.getElementById('analyze-btn');
         const autoLoadBtn = document.getElementById('auto-load-btn');
         const testSoundBtn = document.getElementById('test-sound-btn');
+        const makeyMakeyBtn = document.getElementById('makey-makey-btn');
 
         fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
         analyzeBtn.addEventListener('click', () => this.analyzeAndMap());
         autoLoadBtn.addEventListener('click', () => this.autoLoadPreparedFiles());
         testSoundBtn.addEventListener('click', () => this.testSound());
+        if (makeyMakeyBtn) {
+            makeyMakeyBtn.addEventListener('click', () => this.toggleMakeyMakeyMode());
+        }
         
         // Keyboard support
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -595,6 +619,7 @@ class BowheadPiano {
             };
             
             source.start(0);
+            this.sendMidiNoteOn(keyIndex);
             
             // Store for cleanup
             this.activeSources.set(keyIndex, source);
@@ -618,6 +643,7 @@ class BowheadPiano {
             }
             this.activeSources.delete(keyIndex);
         }
+        this.sendMidiNoteOff(keyIndex);
         
         // Remove visual feedback
         const keyElement = document.querySelector(`[data-key-index="${keyIndex}"]`);
@@ -658,21 +684,30 @@ class BowheadPiano {
     displayKeyboardHints() {
         const container = document.querySelector('.keyboard-hints');
         if (!container || this.keyboardToPianoMap.size === 0) return;
-        
-        const sortedMappings = Array.from(this.keyboardToPianoMap.entries());
-        const firstFew = sortedMappings.slice(0, 17).map(([k, v]) => k.toUpperCase()).join(' ');
-        
-        container.innerHTML = `
-            <h3>Keyboard Shortcuts</h3>
-            <p><strong>${this.keyboardToPianoMap.size} keys available:</strong> ${firstFew}${this.keyboardToPianoMap.size > 17 ? ' ...' : ''}</p>
-            <p style="font-size: 0.9em; color: #666;">Press any mapped key to play the corresponding whale sound!</p>
-        `;
+
+        if (this.makeyMakeyMode) {
+            container.innerHTML = `
+                <h3>🎛️ Makey Makey Mode Active</h3>
+                <p>Front: <kbd>Space</kbd>=C3 &nbsp;<kbd>←</kbd>=D3 &nbsp;<kbd>↓</kbd>=E3 &nbsp;<kbd>↑</kbd>=G3 &nbsp;<kbd>→</kbd>=A3</p>
+                <p>Back:&nbsp; <kbd>A</kbd>=C4 &nbsp;<kbd>S</kbd>=D4 &nbsp;<kbd>D</kbd>=E4 &nbsp;<kbd>F</kbd>=G4 &nbsp;<kbd>G</kbd>=A4 &nbsp;<kbd>W</kbd>=C5</p>
+                <p style="font-size:0.85em;color:#666">MIDI output active — notes also sent to connected MIDI devices.</p>
+            `;
+        } else {
+            const sortedMappings = Array.from(this.keyboardToPianoMap.entries());
+            const firstFew = sortedMappings.slice(0, 17).map(([k]) => k.toUpperCase()).join(' ');
+            container.innerHTML = `
+                <h3>Keyboard Shortcuts</h3>
+                <p><strong>${this.keyboardToPianoMap.size} keys available:</strong> ${firstFew}${this.keyboardToPianoMap.size > 17 ? ' ...' : ''}</p>
+                <p style="font-size: 0.9em; color: #666;">Press any mapped key to play the corresponding whale sound!</p>
+            `;
+        }
     }
 
     handleKeyDown(event) {
         if (event.repeat) return;
         
-        const key = event.key.toLowerCase();
+        // Use event.key but normalise arrows/space to lowercase for map lookup
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase();
         const pianoKeyIndex = this.keyboardToPianoMap.get(key);
         
         if (pianoKeyIndex !== undefined) {
@@ -682,7 +717,7 @@ class BowheadPiano {
     }
 
     handleKeyUp(event) {
-        const key = event.key.toLowerCase();
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase();
         const pianoKeyIndex = this.keyboardToPianoMap.get(key);
         
         if (pianoKeyIndex !== undefined) {
@@ -693,9 +728,68 @@ class BowheadPiano {
 
     enableTestButton() {
         const testBtn = document.getElementById('test-sound-btn');
-        if (testBtn) {
-            testBtn.style.display = 'inline-block';
+        if (testBtn) testBtn.style.display = 'inline-block';
+        const makeyBtn = document.getElementById('makey-makey-btn');
+        if (makeyBtn) makeyBtn.style.display = 'inline-block';
+    }
+
+    // ── MIDI ─────────────────────────────────────────────────────────────────
+    async initMidi() {
+        if (!navigator.requestMIDIAccess) {
+            this.updateMidiStatus('Web MIDI not supported in this browser');
+            return;
         }
+        try {
+            this.midiAccess = await navigator.requestMIDIAccess();
+            this.pickMidiOutput();
+            this.midiAccess.onstatechange = () => this.pickMidiOutput();
+        } catch (e) {
+            this.updateMidiStatus('MIDI access denied');
+        }
+    }
+
+    pickMidiOutput() {
+        const outputs = Array.from(this.midiAccess.outputs.values());
+        this.midiOutput = outputs.length > 0 ? outputs[0] : null;
+        this.updateMidiStatus(
+            this.midiOutput ? `🎹 MIDI out: ${this.midiOutput.name}` : 'MIDI: no output devices'
+        );
+    }
+
+    updateMidiStatus(msg) {
+        const el = document.getElementById('midi-status');
+        if (el) el.textContent = msg;
+    }
+
+    sendMidiNoteOn(keyIndex) {
+        if (!this.midiOutput) return;
+        this.midiOutput.send([0x90, keyIndex + 21, 100]); // ch1 Note On, velocity 100
+    }
+
+    sendMidiNoteOff(keyIndex) {
+        if (!this.midiOutput) return;
+        this.midiOutput.send([0x80, keyIndex + 21, 0]);  // ch1 Note Off
+    }
+
+    // ── Makey Makey ──────────────────────────────────────────────────────────
+    toggleMakeyMakeyMode() {
+        this.makeyMakeyMode = !this.makeyMakeyMode;
+        const btn = document.getElementById('makey-makey-btn');
+        const diagram = document.getElementById('makey-makey-diagram');
+
+        if (this.makeyMakeyMode) {
+            this.keyboardToPianoMap.clear();
+            for (const [k, v] of Object.entries(MAKEY_MAKEY_MAP)) {
+                this.keyboardToPianoMap.set(k, v);
+            }
+            if (btn) { btn.textContent = '🟢 Makey Makey ON'; btn.classList.add('active'); }
+            if (diagram) diagram.style.display = 'block';
+        } else {
+            this.setupKeyboardMapping();
+            if (btn) { btn.textContent = '🎛️ Makey Makey Mode'; btn.classList.remove('active'); }
+            if (diagram) diagram.style.display = 'none';
+        }
+        this.displayKeyboardHints();
     }
 
     async testSound() {
