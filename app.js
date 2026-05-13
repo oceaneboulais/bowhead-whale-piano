@@ -773,6 +773,17 @@ class BowheadPiano {
 
     // ── Makey Makey ──────────────────────────────────────────────────────────
     toggleMakeyMakeyMode() {
+        // If sounds haven't been loaded yet, auto-load them first
+        if (this.frequencyMap.size === 0) {
+            this.autoLoadPreparedFiles().then(() => {
+                if (this.frequencyMap.size > 0) this._activateMakeyMakey();
+            });
+            return;
+        }
+        this._activateMakeyMakey();
+    }
+
+    _activateMakeyMakey() {
         this.makeyMakeyMode = !this.makeyMakeyMode;
         const btn = document.getElementById('makey-makey-btn');
         const diagram = document.getElementById('makey-makey-diagram');
