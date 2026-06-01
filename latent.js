@@ -39,21 +39,25 @@ const typeOn = [];               // legend toggles
 let pulses = [];                 // click feedback
 
 // ── audio (standalone mini-player, pitch-locked like the piano) ──────────────
-let actx = null, manifest = null, clipFreqs = {};
+let actx = null, manifest = null, clipFreqs = {}, audioReady = null;
 const buffers = new Map();
 
-async function initAudioData() {
-    try {
-        const [m, f] = await Promise.all([
-            fetch('manifest.json').then(r => r.ok ? r.json() : null).catch(() => null),
-            fetch('clip_frequencies.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
-        ]);
-        manifest = m && m.files ? m.files : null;
-        clipFreqs = f || {};
-    } catch (_) { /* playback just won't work; scatter still does */ }
+function initAudioData() {
+    audioReady = (async () => {
+        try {
+            const [m, f] = await Promise.all([
+                fetch('manifest.json').then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch('clip_frequencies.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
+            ]);
+            manifest = m && m.files ? m.files : null;
+            clipFreqs = f || {};
+        } catch (_) { /* playback just won't work; scatter still does */ }
+    })();
+    return audioReady;
 }
 
 async function playForPoint(i) {
+    if (audioReady) { setStatus('Loading clips…'); try { await audioReady; } catch (_) {} }
     if (!manifest) { setStatus('No clips loaded — playback unavailable.'); return; }
     if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
     if (actx.state === 'suspended') await actx.resume();
