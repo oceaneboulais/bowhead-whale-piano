@@ -1,10 +1,10 @@
-/* Bowhead Latent Space — interactive PaCMAP scatter linked to playback.
+/* Bowhead Latent Space — rotatable 3D PaCMAP scatter linked to playback.
  *
- * Loads latent_embedding.json (8000 subsampled points: x,y in 0..1, t=type index)
- * and renders a pan/zoom Canvas scatter colored by bowhead call type. Hovering a
- * point shows its type; clicking plays a whale clip — the point's PaCMAP-1 (x)
- * position is mapped to a piano key, and the clip is pitch-locked to that note
- * (same idea as the piano: playbackRate = noteFreq / clipFreq).
+ * Loads latent_embedding.json (8000 subsampled points: x,y,z in 0..1, t=type)
+ * and renders an orbitable 3D scatter colored by bowhead call type. Drag to
+ * rotate, scroll to zoom; it gently auto-spins when idle. Hovering shows the
+ * call type; clicking sonifies the point — call type → C-major scale degree,
+ * vertical position → octave — and plays that key's whale clip, pitch-locked.
  */
 "use strict";
 
@@ -12,19 +12,16 @@ const TYPE_COLORS = [
     '#36c2ff', '#4ade80', '#f59e0b', '#e94560',
     '#a78bfa', '#22d3ee', '#fb7185', '#facc15', '#94a3b8',
 ];
-const pianoFreq = (k) => 27.5 * Math.pow(2, k / 12); // 88-key, A0 = key 0
+const pianoFreq = (k) => 27.5 * Math.pow(2, k / 12);   // 88-key, A0 = key 0
 const NOTE_NAMES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
 const noteName = (k) => NOTE_NAMES[k % 12] + Math.floor((k + 9) / 12);
 
-// Sonify the embedding: each call type maps to a scale degree of a C-major scale
-// (so points in the same cluster sound related), and the point's vertical
-// position picks the octave (higher in the map = higher pitch).
-const TYPE_DEGREE = [0, 2, 4, 5, 7, 9, 11, 12]; // semitone offset per call type
+// call type → scale degree (cluster-mates sound related); height → octave
+const TYPE_DEGREE = [0, 2, 4, 5, 7, 9, 11, 12];
 function keyForPoint(i) {
     const deg = TYPE_DEGREE[DATA.t[i] % TYPE_DEGREE.length];
-    const octave = Math.floor(DATA.y[i] * 5);    // 0..4  → ~C2..C6
-    const key = 3 + (octave + 1) * 12 + deg;       // 3 = C1 on an A0-based board
-    return Math.max(0, Math.min(87, key));
+    const octave = Math.floor(DATA.y[i] * 5);          // 0..4 → ~C2..C6
+    return Math.max(0, Math.min(87, 3 + (octave + 1) * 12 + deg));
 }
 
 const canvas = document.getElementById('c');
@@ -32,11 +29,12 @@ const ctx = canvas.getContext('2d');
 const tip = document.getElementById('tip');
 const statusEl = document.getElementById('status');
 
-let DATA = null;                 // {n, types, x, y, t}
-let view = { scale: 1, ox: 0, oy: 0 };
+let DATA = null;
 let dpr = 1, hoverIdx = -1;
-const typeOn = [];               // legend toggles
-let pulses = [];                 // click feedback
+let pulses = [];                                       // {i, t}
+const cam = { yaw: 0.6, pitch: 0.35, zoom: 1 };
+let lastInteract = 0;                                  // ms; idle → auto-spin
+const typeOn = [];
 
 // ── audio (standalone mini-player, pitch-locked like the piano) ──────────────
 let actx = null, manifest = null, clipFreqs = {}, audioReady = null;
@@ -51,7 +49,7 @@ function initAudioData() {
             ]);
             manifest = m && m.files ? m.files : null;
             clipFreqs = f || {};
-        } catch (_) { /* playback just won't work; scatter still does */ }
+        } catch (_) { /* scatter still works without audio */ }
     })();
     return audioReady;
 }
@@ -84,25 +82,37 @@ async function playForPoint(i) {
     const g = actx.createGain(); g.gain.value = 4.0;
     src.connect(g); g.connect(actx.destination);
     src.start();
-    pulses.push({ x: DATA.x[i], y: DATA.y[i], t: performance.now() / 1000, hue: DATA.t[i] });
+    pulses.push({ i, t: performance.now() / 1000 });
 }
 
 function setStatus(s) { statusEl.textContent = s; }
 
-// ── view / projection ────────────────────────────────────────────────────────
+// ── 3D projection ─────────────────────────────────────────────────────────────
+let cx = 0, cy = 0, baseSize = 1;
+const FOCAL = 2.4;
 function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.floor(innerWidth * dpr);
     canvas.height = Math.floor(innerHeight * dpr);
+    cx = canvas.width / 2; cy = canvas.height / 2;
+    baseSize = Math.min(canvas.width, canvas.height) * 0.42;
 }
-function fitView() {
-    const s = Math.min(canvas.width, canvas.height) * 0.92;
-    view.scale = s;
-    view.ox = (canvas.width - s) / 2;
-    view.oy = (canvas.height - s) / 2;
+// returns {px, py, persp, depth}
+function project(i) {
+    const x = DATA.x[i] - 0.5, y = DATA.y[i] - 0.5, z = (DATA.z ? DATA.z[i] : 0.5) - 0.5;
+    const cyaw = Math.cos(cam.yaw), syaw = Math.sin(cam.yaw);
+    const cpit = Math.cos(cam.pitch), spit = Math.sin(cam.pitch);
+    const x1 = x * cyaw + z * syaw;          // yaw about vertical axis
+    const z1 = -x * syaw + z * cyaw;
+    const y2 = y * cpit - z1 * spit;          // pitch about horizontal axis
+    const z2 = y * spit + z1 * cpit;
+    const persp = FOCAL / (FOCAL - z2);
+    return {
+        px: cx + x1 * persp * baseSize * cam.zoom,
+        py: cy - y2 * persp * baseSize * cam.zoom,
+        persp, depth: z2,
+    };
 }
-const sx = (x) => view.ox + x * view.scale;
-const sy = (y) => view.oy + (1 - y) * view.scale; // flip Y so up = +
 
 // ── render ───────────────────────────────────────────────────────────────────
 function draw() {
@@ -111,41 +121,48 @@ function draw() {
     ctx.fillStyle = '#02060f';
     ctx.fillRect(0, 0, W, H);
 
-    const r = Math.max(1.2, 1.7 * dpr) * Math.max(0.6, Math.min(2.2, view.scale / 900));
+    // idle auto-spin
+    if (performance.now() - lastInteract > 2500) cam.yaw += 0.0022;
+
     ctx.globalCompositeOperation = 'lighter';
+    const r0 = Math.max(1.1, 1.5 * dpr);
     for (let i = 0; i < DATA.n; i++) {
         const ti = DATA.t[i];
         if (!typeOn[ti]) continue;
-        const X = sx(DATA.x[i]), Y = sy(DATA.y[i]);
-        if (X < -5 || X > W + 5 || Y < -5 || Y > H + 5) continue;
+        const p = project(i);
+        if (p.px < -5 || p.px > W + 5 || p.py < -5 || p.py > H + 5) continue;
+        const near = (p.depth + 0.9) / 1.8;              // ~0..1, front = brighter/bigger
         ctx.fillStyle = TYPE_COLORS[ti % TYPE_COLORS.length];
-        ctx.globalAlpha = i === hoverIdx ? 1 : 0.55;
-        ctx.beginPath(); ctx.arc(X, Y, i === hoverIdx ? r * 3 : r, 0, 6.283); ctx.fill();
+        ctx.globalAlpha = i === hoverIdx ? 1 : (0.28 + 0.55 * near);
+        const r = (i === hoverIdx ? r0 * 3.2 : r0 * (0.6 + 0.9 * near)) * p.persp;
+        ctx.beginPath(); ctx.arc(p.px, p.py, r, 0, 6.283); ctx.fill();
     }
     ctx.globalAlpha = 1;
 
-    // click pulses
+    // click pulses (ripples at the played node)
     const now = performance.now() / 1000;
-    pulses = pulses.filter(p => now - p.t < 1.2);
-    for (const p of pulses) {
-        const age = (now - p.t) / 1.2;
-        ctx.strokeStyle = TYPE_COLORS[p.hue % TYPE_COLORS.length];
+    pulses = pulses.filter(pl => now - pl.t < 1.2);
+    for (const pl of pulses) {
+        const age = (now - pl.t) / 1.2;
+        const p = project(pl.i);
+        ctx.strokeStyle = TYPE_COLORS[DATA.t[pl.i] % TYPE_COLORS.length];
         ctx.globalAlpha = (1 - age) * 0.9;
         ctx.lineWidth = 2 * dpr;
-        ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), age * 40 * dpr + 4, 0, 6.283); ctx.stroke();
+        ctx.beginPath(); ctx.arc(p.px, p.py, age * 42 * dpr + 4, 0, 6.283); ctx.stroke();
     }
     ctx.globalAlpha = 1;
     requestAnimationFrame(draw);
 }
 
-// ── hit testing ───────────────────────────────────────────────────────────────
+// ── hit testing (screen-space nearest, prefer front) ──────────────────────────
 function nearest(mx, my) {
-    let best = -1, bestD = 12 * dpr * 12 * dpr;
+    let best = -1, bestScore = 14 * dpr * 14 * dpr;
     for (let i = 0; i < DATA.n; i++) {
         if (!typeOn[DATA.t[i]]) continue;
-        const dxp = sx(DATA.x[i]) - mx, dyp = sy(DATA.y[i]) - my;
+        const p = project(i);
+        const dxp = p.px - mx, dyp = p.py - my;
         const d = dxp * dxp + dyp * dyp;
-        if (d < bestD) { bestD = d; best = i; }
+        if (d < bestScore) { bestScore = d; best = i; }
     }
     return best;
 }
@@ -163,9 +180,12 @@ function buildLegend() {
     });
 }
 
-// ── interaction ──────────────────────────────────────────────────────────────
+// ── interaction: drag = orbit, wheel = zoom, click = play ─────────────────────
 let dragging = false, dragMoved = false, lastX = 0, lastY = 0;
-canvas.addEventListener('mousedown', (e) => { dragging = true; dragMoved = false; lastX = e.clientX; lastY = e.clientY; });
+canvas.addEventListener('mousedown', (e) => {
+    dragging = true; dragMoved = false; lastX = e.clientX; lastY = e.clientY;
+    lastInteract = performance.now();
+});
 window.addEventListener('mouseup', (e) => {
     if (dragging && !dragMoved) {
         const i = nearest(e.clientX * dpr, e.clientY * dpr);
@@ -176,9 +196,12 @@ window.addEventListener('mouseup', (e) => {
 canvas.addEventListener('mousemove', (e) => {
     const mx = e.clientX * dpr, my = e.clientY * dpr;
     if (dragging) {
-        const ddx = (e.clientX - lastX) * dpr, ddy = (e.clientY - lastY) * dpr;
-        if (Math.abs(e.clientX - lastX) + Math.abs(e.clientY - lastY) > 3) dragMoved = true;
-        view.ox += ddx; view.oy += ddy; lastX = e.clientX; lastY = e.clientY;
+        const ddx = e.clientX - lastX, ddy = e.clientY - lastY;
+        if (Math.abs(ddx) + Math.abs(ddy) > 3) dragMoved = true;
+        cam.yaw += ddx * 0.006;
+        cam.pitch = Math.max(-1.4, Math.min(1.4, cam.pitch + ddy * 0.006));
+        lastX = e.clientX; lastY = e.clientY;
+        lastInteract = performance.now();
         tip.style.display = 'none';
         return;
     }
@@ -193,14 +216,29 @@ canvas.addEventListener('mousemove', (e) => {
 });
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
-    const mx = e.clientX * dpr, my = e.clientY * dpr;
-    const f = Math.exp(-e.deltaY * 0.0015);
-    // zoom around the cursor
-    view.ox = mx - (mx - view.ox) * f;
-    view.oy = my - (my - view.oy) * f;
-    view.scale *= f;
+    cam.zoom = Math.max(0.4, Math.min(6, cam.zoom * Math.exp(-e.deltaY * 0.0012)));
+    lastInteract = performance.now();
 }, { passive: false });
-window.addEventListener('resize', () => { resize(); });
+// touch: one finger orbit
+canvas.addEventListener('touchstart', (e) => {
+    const t = e.touches[0]; lastX = t.clientX; lastY = t.clientY; dragging = true; dragMoved = false;
+    lastInteract = performance.now();
+}, { passive: true });
+canvas.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    cam.yaw += (t.clientX - lastX) * 0.006;
+    cam.pitch = Math.max(-1.4, Math.min(1.4, cam.pitch + (t.clientY - lastY) * 0.006));
+    lastX = t.clientX; lastY = t.clientY; dragMoved = true; lastInteract = performance.now();
+}, { passive: true });
+canvas.addEventListener('touchend', (e) => {
+    if (dragging && !dragMoved && e.changedTouches[0]) {
+        const ct = e.changedTouches[0];
+        const i = nearest(ct.clientX * dpr, ct.clientY * dpr);
+        if (i >= 0) playForPoint(i);
+    }
+    dragging = false;
+});
+window.addEventListener('resize', resize);
 
 // ── boot ─────────────────────────────────────────────────────────────────────
 (async function () {
@@ -212,11 +250,10 @@ window.addEventListener('resize', () => { resize(); });
         setStatus('✗ latent_embedding.json missing — run export_latent_for_web.py');
         return;
     }
-    fitView();
     buildLegend();
-    setStatus(`${DATA.n.toLocaleString()} points · ${DATA.types.length} call types`);
+    const dimLabel = (DATA.dim || (DATA.z ? 3 : 2)) + 'D';
+    setStatus(`${DATA.n.toLocaleString()} points · ${DATA.types.length} call types · ${dimLabel}`);
     initAudioData();
     requestAnimationFrame(draw);
-    // small hook for deep-linking / automation
-    window.LATENT = { data: () => DATA, project: (i) => ({ x: sx(DATA.x[i]), y: sy(DATA.y[i]) }), play: (i) => playForPoint(i) };
+    window.LATENT = { data: () => DATA, project: (i) => { const p = project(i); return { x: p.px, y: p.py }; }, play: (i) => playForPoint(i), cam };
 })();

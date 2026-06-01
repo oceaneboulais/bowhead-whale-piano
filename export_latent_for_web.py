@@ -26,11 +26,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("pacmap_dir")
     ap.add_argument("--max", type=int, default=8000)
+    ap.add_argument("--dim", type=int, default=3, choices=(2, 3))
     ap.add_argument("--out", default=str(HERE / "latent_embedding.json"))
     args = ap.parse_args()
 
-    mat = scipy.io.loadmat(str(Path(args.pacmap_dir) / "pacmap_embeddings_2d.mat"))
-    xy = np.asarray(mat["pacmap_embeddings_2d"], dtype=np.float64)
+    mat = scipy.io.loadmat(str(Path(args.pacmap_dir) / f"pacmap_embeddings_{args.dim}d.mat"))
+    xy = np.asarray(mat[f"pacmap_embeddings_{args.dim}d"], dtype=np.float64)
     names = [str(n[0]) if hasattr(n, "__len__") and len(n) else str(n)
              for n in mat["original_filenames"].ravel()]
 
@@ -52,11 +53,14 @@ def main():
 
     out = {
         "n": int(norm.shape[0]),
+        "dim": int(norm.shape[1]),
         "types": [t.replace("Type", "Type ") for t in type_list],
         "x": [round(float(v), 4) for v in norm[:, 0]],
         "y": [round(float(v), 4) for v in norm[:, 1]],
         "t": [tindex[t] for t in types_for],
     }
+    if norm.shape[1] >= 3:
+        out["z"] = [round(float(v), 4) for v in norm[:, 2]]
     Path(args.out).write_text(json.dumps(out, separators=(",", ":")))
     kb = Path(args.out).stat().st_size / 1024
     print(f"wrote {args.out}  ({out['n']} pts, {len(type_list)} types, {kb:.0f} KB)")
