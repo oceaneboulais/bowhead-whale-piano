@@ -35,6 +35,25 @@
     #hint { position: fixed; right: 18px; bottom: 18px; z-index: 5; font-size: 0.76rem;
             color: #6f93a8; text-align: right; }
     #status { position: fixed; right: 18px; top: 52px; z-index: 5; font-size: 0.78rem; color: #36c2ff; }
+
+    #sampler-panel {
+      position: fixed; top: 64px; right: 16px; z-index: 7; width: 340px; max-width: 86vw;
+      background: rgba(6,18,31,0.96); border: 1px solid #1c3e5a; border-radius: 12px;
+      padding: 12px 14px; display: none; box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+    }
+    #sampler-panel.open { display: block; }
+    .sp-head { display: flex; align-items: center; gap: 10px; }
+    .sp-type { font-weight: 700; font-size: 0.95rem; color: #eafcff; flex: 1; }
+    .viz-ibtn { background: #0e2336; color: #cfeaf5; border: 1px solid #1c3e5a; border-radius: 8px;
+                width: 30px; height: 28px; cursor: pointer; }
+    .viz-ibtn:hover { background: #154062; }
+    .sp-imgs { display: flex; gap: 10px; margin: 10px 0; }
+    .sp-imgs figure { flex: 1; }
+    .sp-imgs img { width: 100%; border-radius: 6px; display: block; background: #02060f; image-rendering: pixelated; }
+    .sp-imgs figcaption { font-size: 0.68rem; color: #6f93a8; margin-top: 4px; text-align: center; }
+    .sp-desc { font-size: 0.82rem; color: #cfeaf5; margin-top: 6px; }
+    .sp-src { font-size: 0.7rem; color: #5b7e92; margin-top: 6px; }
+    .sp-cite { font-size: 0.68rem; color: #5b7e92; margin-top: 8px; font-style: italic; border-top: 1px solid #14324d; padding-top: 6px; }
   </style>
 </head>
 <body>
@@ -44,8 +63,24 @@
     <span class="spacer"></span>
     <button id="dim-toggle" class="ctl" title="Toggle 2D / 3D">3D</button>
     <button id="color-toggle" class="ctl" title="Color by call type or cluster">Color: Type</button>
+    <button id="sampler-toggle" class="ctl" title="Spectrogram sampler: click a point to inspect it">🔬 Sampler</button>
     <a class="back" href="index.html">← Back to Piano</a>
   </header>
+
+  <!-- Spectrogram sampler inspection panel -->
+  <div id="sampler-panel">
+    <div class="sp-head">
+      <span id="sp-type" class="sp-type">—</span>
+      <button id="sp-close" class="viz-ibtn" title="Close">✕</button>
+    </div>
+    <div class="sp-imgs">
+      <figure><img id="sp-input" alt="input spectrogram"><figcaption>Input spectrogram (SNR)</figcaption></figure>
+      <figure><img id="sp-output" alt="reconstruction"><figcaption>Autoencoder reconstruction (example)</figcaption></figure>
+    </div>
+    <p id="sp-desc" class="sp-desc"></p>
+    <p id="sp-src" class="sp-src"></p>
+    <p id="sp-cite" class="sp-cite"></p>
+  </div>
 
   <canvas id="c"></canvas>
   <div id="legend"><h3>Call type</h3></div>

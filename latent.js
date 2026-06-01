@@ -34,10 +34,11 @@ let mode = '3d';            // '3d' | '2d'
 let colorMode = 'type';     // 'type' | 'cluster'
 let dpr = 1, hoverIdx = -1;
 let pulses = [];
-const cam = { yaw: 0.6, pitch: 0.35, zoom: 1, px: 0, py: 0 }; // px/py = 2D pan
+const cam = { yaw: 0.6, pitch: 0.35, zoom: 1, sx: 0, sy: 0 }; // sx/sy = screen pan/offset
 const vel = { yaw: 0, pitch: 0 };     // inertia
 let lastInteract = 0;
 const typeOn = [], clusterOn = [];
+let samplerMode = false, SAMPLES = null, zoomAnim = null, sampleOpen = false;
 
 // group accessors honor the active color mode
 const groupIdx = (i) => colorMode === 'type' ? DATA.t[i] : DATA.c[i];
@@ -111,8 +112,8 @@ function project(i) {
     if (mode === '2d') {
         const x = (DATA.x2 ? DATA.x2[i] : DATA.x[i]) - 0.5;
         const y = (DATA.y2 ? DATA.y2[i] : DATA.y[i]) - 0.5;
-        return { px: cx + x * baseSize * 2 * cam.zoom + cam.px,
-                 py: cy - y * baseSize * 2 * cam.zoom + cam.py, persp: 1, depth: 0 };
+        return { px: cx + x * baseSize * 2 * cam.zoom + cam.sx,
+                 py: cy - y * baseSize * 2 * cam.zoom + cam.sy, persp: 1, depth: 0 };
     }
     const x = DATA.x[i] - 0.5, y = DATA.y[i] - 0.5, z = (DATA.z ? DATA.z[i] : 0.5) - 0.5;
     const cyaw = Math.cos(cam.yaw), syaw = Math.sin(cam.yaw);
@@ -122,7 +123,7 @@ function project(i) {
     const y2 = y * cpit - z1 * spit;
     const z2 = y * spit + z1 * cpit;
     const persp = FOCAL / (FOCAL - z2);
-    return { px: cx + x1 * persp * baseSize * cam.zoom, py: cy - y2 * persp * baseSize * cam.zoom, persp, depth: z2 };
+    return { px: cx + x1 * persp * baseSize * cam.zoom + cam.sx, py: cy - y2 * persp * baseSize * cam.zoom + cam.sy, persp, depth: z2 };
 }
 
 // ── render ───────────────────────────────────────────────────────────────────
@@ -132,8 +133,8 @@ function draw() {
     ctx.fillStyle = '#02060f';
     ctx.fillRect(0, 0, W, H);
 
-    // inertia + idle auto-spin (3D only)
-    if (mode === '3d') {
+    // inertia + idle auto-spin (3D only; paused while inspecting a sample)
+    if (mode === '3d' && !sampleOpen) {
         const dragging = pointer.dragging;
         if (!dragging) {
             cam.yaw += vel.yaw;
@@ -144,6 +145,15 @@ function draw() {
                 cam.yaw += 0.0022;
             }
         }
+    }
+
+    // zoom-to-point animation (sampler mode): glide the focused point to left-center
+    if (zoomAnim !== null) {
+        cam.zoom += (2.6 - cam.zoom) * 0.12;
+        const base = project(zoomAnim);
+        cam.sx += (W * 0.34 - base.px);
+        cam.sy += (H * 0.5 - base.py);
+        if (Math.abs(cam.zoom - 2.6) < 0.03) zoomAnim = null;
     }
 
     ctx.globalCompositeOperation = 'lighter';
@@ -207,11 +217,14 @@ function move(x, y) {
     if (mode === '3d') {
         cam.yaw += ddx * 0.006; cam.pitch = Math.max(-1.4, Math.min(1.4, cam.pitch + ddy * 0.006));
         vel.yaw = ddx * 0.006; vel.pitch = ddy * 0.006;       // carry momentum on release
-    } else { cam.px += ddx * dpr; cam.py += ddy * dpr; }
+    } else { cam.sx += ddx * dpr; cam.sy += ddy * dpr; }
     pointer.lx = x; pointer.ly = y; lastInteract = performance.now(); tip.style.display = 'none';
 }
 function up(x, y) {
-    if (pointer.dragging && !pointer.moved) { const i = nearest(x * dpr, y * dpr); if (i >= 0) playForPoint(i); }
+    if (pointer.dragging && !pointer.moved) {
+        const i = nearest(x * dpr, y * dpr);
+        if (i >= 0) { if (samplerMode) openSample(i); else playForPoint(i); }
+    }
     pointer.dragging = false;
 }
 canvas.addEventListener('mousedown', (e) => down(e.clientX, e.clientY));
@@ -239,6 +252,7 @@ window.addEventListener('resize', resize);
 // ── mode / color toggles ──────────────────────────────────────────────────────
 function setMode(m) {
     mode = m;
+    cam.sx = 0; cam.sy = 0; cam.zoom = 1; zoomAnim = null;   // reset framing
     document.getElementById('dim-toggle').textContent = mode === '3d' ? '3D' : '2D';
     document.getElementById('hint').innerHTML = (mode === '3d' ? 'drag to rotate' : 'drag to pan')
         + ' · scroll to zoom · click a point to play<br>call type → note · height → octave';
@@ -247,6 +261,43 @@ function setColorMode(cm) {
     colorMode = cm;
     document.getElementById('color-toggle').textContent = 'Color: ' + (cm === 'type' ? 'Type' : 'Cluster');
     buildLegend();
+}
+
+// ── Spectrogram Sampler mode ───────────────────────────────────────────────────
+function setSampler(on) {
+    samplerMode = on;
+    const btn = document.getElementById('sampler-toggle');
+    if (btn) btn.classList.toggle('active', on);
+    if (!on) closeSample();
+    setStatus(on
+        ? '🔬 Sampler ON — click any point to zoom in & inspect its spectrogram + call type'
+        : `${DATA.n.toLocaleString()} points · ${DATA.types.length} call types · ${DATA.nclusters} clusters`);
+}
+function openSample(i) {
+    const t = DATA.t[i];
+    const s = SAMPLES && SAMPLES.types ? (SAMPLES.types[t] || SAMPLES.types[String(t)]) : null;
+    const panel = document.getElementById('sampler-panel');
+    if (panel && s) {
+        document.getElementById('sp-type').textContent = `${DATA.types[t]} — ${s.name}`;
+        document.getElementById('sp-desc').textContent = s.desc || '';
+        document.getElementById('sp-cite').textContent = SAMPLES.citation || '';
+        document.getElementById('sp-src').textContent = s.source ? ('input source: ' + s.source) : '';
+        const inImg = document.getElementById('sp-input');
+        inImg.src = s.input || ''; inImg.style.display = s.input ? 'block' : 'none';
+        const outImg = document.getElementById('sp-output');
+        outImg.src = SAMPLES.recon_example || ''; outImg.style.display = SAMPLES.recon_example ? 'block' : 'none';
+        panel.classList.add('open');
+    }
+    sampleOpen = true;
+    zoomAnim = i;                 // glide-zoom toward the clicked point
+    lastInteract = performance.now();
+    playForPoint(i);             // also play its sound
+}
+function closeSample() {
+    sampleOpen = false; zoomAnim = null;
+    cam.zoom = 1; cam.sx = 0; cam.sy = 0;
+    const panel = document.getElementById('sampler-panel');
+    if (panel) panel.classList.remove('open');
 }
 
 // ── boot ─────────────────────────────────────────────────────────────────────
@@ -262,13 +313,20 @@ function setColorMode(cm) {
     buildLegend();
     setStatus(`${DATA.n.toLocaleString()} points · ${DATA.types.length} call types · ${DATA.nclusters} clusters`);
     initAudioData();
+    SAMPLES = await fetch('spectrogram_samples/samples.json', { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : null).catch(() => null);
 
     document.getElementById('dim-toggle').onclick = () => setMode(mode === '3d' ? '2d' : '3d');
     document.getElementById('color-toggle').onclick = () => setColorMode(colorMode === 'type' ? 'cluster' : 'type');
+    const sb = document.getElementById('sampler-toggle');
+    if (sb) sb.onclick = () => setSampler(!samplerMode);
+    const sc = document.getElementById('sp-close');
+    if (sc) sc.onclick = closeSample;
 
     requestAnimationFrame(draw);
     window.LATENT = {
         data: () => DATA, project: (i) => { const p = project(i); return { x: p.px, y: p.py }; },
-        play: (i) => playForPoint(i), cam, setMode, setColorMode, getState: () => ({ mode, colorMode }),
+        play: (i) => playForPoint(i), cam, setMode, setColorMode, setSampler, openSample,
+        getState: () => ({ mode, colorMode, samplerMode, sampleOpen }),
     };
 })();

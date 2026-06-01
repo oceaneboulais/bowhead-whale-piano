@@ -1,0 +1,54 @@
+{
+  "citation": "Bowhead call-type descriptors after Blackwell, Thode et al. 2015 (JASA 137:2398) and Clark & Johnson 1984.",
+  "types": {
+    "0": {
+      "name": "Simple FM upsweep",
+      "desc": "Short frequency-modulated call sweeping upward in frequency \u2014 the most common bowhead simple-call form.",
+      "input": "spectrogram_samples/input_Type0.png",
+      "source": "S308G0T20080906T003317_Type0.mat"
+    },
+    "1": {
+      "name": "Simple FM downsweep",
+      "desc": "Frequency-modulated call sweeping downward; paired with upsweeps among the dominant simple calls.",
+      "input": "spectrogram_samples/input_Type1.png",
+      "source": "S314A0T20140828T232643_Type1.mat"
+    },
+    "2": {
+      "name": "Constant-frequency tonal",
+      "desc": "Near-flat tonal call with little frequency modulation.",
+      "input": "spectrogram_samples/input_Type2.png",
+      "source": "S508D0T20080913T165000_Type2.mat"
+    },
+    "3": {
+      "name": "U-shaped (inflected)",
+      "desc": "Down-then-up inflected contour \u2014 an undulated simple call.",
+      "input": "spectrogram_samples/input_Type3.png",
+      "source": "S310D0T20100913T080944_Type3.mat"
+    },
+    "4": {
+      "name": "N-shaped (inflected)",
+      "desc": "Up-then-down inflected contour.",
+      "input": "spectrogram_samples/input_Type4.png",
+      "source": "S514A0T20140917T133425_Type4.mat"
+    },
+    "5": {
+      "name": "Undulated / multi-inflected",
+      "desc": "Several inflection points; a more modulated call contour.",
+      "input": "spectrogram_samples/input_Type5.png",
+      "source": "S508D0T20080913T220640_Type5.mat"
+    },
+    "6": {
+      "name": "Complex / pulsive",
+      "desc": "Broadband, pulsive or harmonically rich complex call.",
+      "input": "spectrogram_samples/input_Type6.png",
+      "source": "S312A0T20120918T183421_Type6.mat"
+    },
+    "7": {
+      "name": "Song element",
+      "desc": "Repeated, structured unit characteristic of bowhead song.",
+      "input": "spectrogram_samples/input_Type7.png",
+      "source": "S514A0T20140917T165711_Type7.mat"
+    }
+  },
+  "recon_example": "spectrogram_samples/recon_example.jpg"
+}
