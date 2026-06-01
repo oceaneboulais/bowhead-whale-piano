@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bowhead Latent Space — PaCMAP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+           background: #02060f; color: #cfeaf5; height: 100vh; overflow: hidden; }
+    header { position: fixed; top: 0; left: 0; right: 0; z-index: 5;
+             display: flex; align-items: center; gap: 14px; padding: 10px 18px;
+             background: linear-gradient(180deg, rgba(6,18,31,0.95), rgba(6,18,31,0.0)); }
+    header h1 { font-size: 1.05rem; font-weight: 700; }
+    header .sub { font-size: 0.78rem; color: #6f93a8; }
+    header .spacer { flex: 1; }
+    a.back { color: #36c2ff; text-decoration: none; font-size: 0.85rem;
+             border: 1px solid #1c3e5a; border-radius: 8px; padding: 6px 12px; }
+    a.back:hover { background: #0e2336; }
+    #c { display: block; width: 100vw; height: 100vh; cursor: grab; }
+    #c:active { cursor: grabbing; }
+    #legend { position: fixed; left: 18px; bottom: 18px; z-index: 5;
+              background: rgba(6,18,31,0.85); border: 1px solid #14324d; border-radius: 10px;
+              padding: 10px 12px; font-size: 0.8rem; max-width: 200px; }
+    #legend h3 { font-size: 0.74rem; color: #6f93a8; text-transform: uppercase;
+                 letter-spacing: 0.05em; margin-bottom: 6px; font-weight: 700; }
+    .lg { display: flex; align-items: center; gap: 8px; padding: 2px 0; cursor: pointer; opacity: 1; }
+    .lg.off { opacity: 0.3; }
+    .lg .sw { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+    #tip { position: fixed; z-index: 6; pointer-events: none; display: none;
+           background: rgba(2,6,15,0.95); border: 1px solid #1c3e5a; border-radius: 7px;
+           padding: 5px 9px; font-size: 0.78rem; color: #eafcff; white-space: nowrap; }
+    #hint { position: fixed; right: 18px; bottom: 18px; z-index: 5; font-size: 0.76rem;
+            color: #6f93a8; text-align: right; }
+    #status { position: fixed; right: 18px; top: 52px; z-index: 5; font-size: 0.78rem; color: #36c2ff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧬 Bowhead Latent Space</h1>
+    <span class="sub">PaCMAP 2D · 32-D autoencoder · colored by call type · click a point to hear it</span>
+    <span class="spacer"></span>
+    <a class="back" href="index.html">← Back to Piano</a>
+  </header>
+
+  <canvas id="c"></canvas>
+  <div id="legend"><h3>Call type</h3></div>
+  <div id="tip"></div>
+  <div id="status"></div>
+  <div id="hint">drag to pan · scroll to zoom · click a point to play</div>
+
+  <script src="latent.js"></script>
+</body>
+</html>
