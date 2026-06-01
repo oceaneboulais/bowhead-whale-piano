@@ -79,8 +79,28 @@
                 🎵 Pitch-Lock: ON
             </button>
 
+            <button id="viz-btn" class="btn btn-viz">
+                🌊 Visualizer
+            </button>
+
             <div id="status" class="status"></div>
             <div id="midi-status" class="midi-status"></div>
+            <div id="viz-status" class="midi-status">🌊 Visualizer: waiting for TouchDesigner…</div>
+        </div>
+
+        <!-- Optional popup art box: bioluminescent latent-ocean visualizer -->
+        <div id="viz-overlay" class="viz-overlay" aria-hidden="true">
+            <div class="viz-panel">
+                <div class="viz-bar">
+                    <span class="viz-title">🌊 Whale Song Visualizer</span>
+                    <span class="viz-sub">bioluminescent latent ocean · copepods &amp; krill drift the column · each note lights its embedding node into a jellyfish tendril</span>
+                    <span class="viz-spacer"></span>
+                    <label class="viz-td"><input type="checkbox" id="td-link-toggle" checked> TouchDesigner link</label>
+                    <button id="viz-fullscreen" class="viz-ibtn" title="Fullscreen">⛶</button>
+                    <button id="viz-close" class="viz-ibtn" title="Close">✕</button>
+                </div>
+                <canvas id="viz-canvas" class="viz-canvas"></canvas>
+            </div>
         </div>
 
         <div id="makey-makey-diagram" class="makey-diagram" style="display:none">

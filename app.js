@@ -48,9 +48,319 @@ const NOTE_NAMES = [
     'C8'
 ];
 
+// WebSocket endpoint of the TouchDesigner WebSocket DAT (server mode).
+// Override before this script loads with `window.TD_WS_URL = 'ws://host:port'`.
+const TD_WS_URL = (typeof window !== 'undefined' && window.TD_WS_URL) || 'ws://localhost:9980';
+
+/**
+ * WhaleVizBridge — streams note/pitch events to TouchDesigner for the
+ * bioluminescent-tendril visualizer. Entirely optional: if TD isn't running it
+ * just retries quietly and never affects the piano. (Chrome allows ws://localhost
+ * from the https GitHub Pages site — localhost is exempt from mixed-content.)
+ */
+class WhaleVizBridge {
+    constructor(url) {
+        this.url = url;
+        this.ws = null;
+        this.connected = false;
+        this.enabled = true;
+        this._retry = null;
+        this.connect();
+    }
+    connect() {
+        if (!this.enabled) return;
+        try {
+            this.ws = new WebSocket(this.url);
+        } catch (_) { this._scheduleRetry(); return; }
+        this.ws.onopen = () => { this.connected = true; this._status(); };
+        this.ws.onclose = () => { this.connected = false; this._status(); this._scheduleRetry(); };
+        this.ws.onerror = () => { /* a close event follows; retry handled there */ };
+    }
+    _scheduleRetry() {
+        if (this._retry || !this.enabled) return;
+        this._retry = setTimeout(() => { this._retry = null; this.connect(); }, 2500);
+    }
+    send(obj) {
+        if (this.connected && this.ws && this.ws.readyState === WebSocket.OPEN) {
+            try { this.ws.send(JSON.stringify(obj)); } catch (_) { /* drop frame */ }
+        }
+    }
+    noteOn(d)  { this.send({ type: 'noteon',  t: performance.now() / 1000, ...d }); }
+    noteOff(d) { this.send({ type: 'noteoff', t: performance.now() / 1000, ...d }); }
+    setEnabled(on) {
+        this.enabled = on;
+        if (on) this.connect();
+        else if (this.ws) { try { this.ws.close(); } catch (_) {} }
+        this._status();
+    }
+    _status() {
+        const el = document.getElementById('viz-status');
+        if (!el) return;
+        el.textContent = !this.enabled
+            ? '🌊 Visualizer link: off'
+            : this.connected
+                ? '🌊 Visualizer: connected to TouchDesigner'
+                : '🌊 Visualizer: waiting for TouchDesigner…';
+    }
+}
+
+// Small deterministic PRNG so the latent embedding layout is stable across loads.
+function mulberry32(a) {
+    return function () {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+/**
+ * WhaleVisualizer — the in-browser popup art box. Blends three references:
+ *  - bioluminescent jellyfish tendrils that bob slowly up/down and sway,
+ *  - a minimal UMAP / latent-embedding map: the 88 sounds as a faint clustered
+ *    point cloud; playing a key lights up its node,
+ *  - audio-reactivity: the master analyser drives glow, tendril sway and bell size.
+ * As you play, a faint trajectory line threads the recently-lit nodes — a path
+ * through latent space.
+ */
+class WhaleVisualizer {
+    constructor(canvas, analyser, freqTable) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.analyser = analyser;
+        this.freqTable = freqTable; // PIANO_FREQUENCIES
+        this.bins = analyser ? new Uint8Array(analyser.frequencyBinCount) : null;
+        this.tendrils = [];
+        this.trail = [];           // recent lit nodes → latent trajectory
+        this.running = false;
+        this.dpr = 1;
+        this.embed = this._buildEmbedding(freqTable.length);
+        this.plankton = this._buildPlankton(60); // bowhead prey: copepods + krill
+        this._frame = this._frame.bind(this);
+        this._resize = this._resize.bind(this);
+    }
+
+    // Bowhead whales filter-feed on zooplankton — mainly copepods (Calanus) and
+    // krill (euphausiids). A drifting field of both floats up the water column.
+    _buildPlankton(n) {
+        const rnd = mulberry32(7);
+        const arr = [];
+        for (let i = 0; i < n; i++) {
+            const krill = rnd() < 0.4;
+            arr.push({
+                krill,
+                x: rnd(), y: rnd(),
+                vx: (rnd() - 0.5) * 0.004,
+                vy: -0.0018 - rnd() * 0.004,          // slow upward drift
+                phase: rnd() * Math.PI * 2,
+                size: (krill ? 2.4 : 1.6) * (0.7 + rnd() * 0.8),
+                hop: rnd() * 3, hopT: 1 + rnd() * 3, kick: 0,
+                hue: krill ? (28 + rnd() * 16) : (165 + rnd() * 35), // krill amber, copepods cyan-green
+            });
+        }
+        return arr;
+    }
+
+    _drawPlankton(t, lvl) {
+        const ctx = this.ctx, W = this.canvas.width, H = this.canvas.height, dpr = this.dpr;
+        for (const p of this.plankton) {
+            let dx = p.vx, dy = p.vy;
+            if (p.krill) {
+                dx += Math.sin(t * 1.3 + p.phase) * 0.0010;       // gentle swimming sway
+            } else {
+                p.hop -= 1 / 60;                                   // copepods hop
+                if (p.hop <= 0) { p.hop = p.hopT; p.kick = 0.02; }
+                if (p.kick > 0) { dy -= p.kick; p.kick *= 0.8; }
+                dx += Math.sin(t * 0.6 + p.phase) * 0.0006;
+            }
+            dx *= (1 + lvl * 1.5); dy *= (1 + lvl * 1.5);          // calls agitate the water
+            p.x += dx; p.y += dy;
+            if (p.y < -0.03) { p.y = 1.03; p.x = Math.random(); }  // respawn from below
+            if (p.x < -0.03) p.x = 1.03; if (p.x > 1.03) p.x = -0.03;
+
+            const x = p.x * W, y = p.y * H, s = p.size * dpr * (1 + lvl * 0.6);
+            const a = 0.22 + 0.18 * Math.sin(t * 1.5 + p.phase);
+            ctx.strokeStyle = `hsla(${p.hue},80%,72%,${a})`;
+            ctx.fillStyle = `hsla(${p.hue},85%,80%,${a * 0.9})`;
+            ctx.lineWidth = Math.max(0.6, 0.7 * dpr);
+
+            if (p.krill) {                                         // curved segmented body + eye
+                const ang = Math.sin(t * 2 + p.phase) * 0.5;
+                ctx.beginPath();
+                for (let k = 0; k <= 5; k++) {
+                    const f = k / 5;
+                    const bx = x + Math.cos(ang) * (f - 0.5) * s * 4;
+                    const by = y + Math.sin(ang) * (f - 0.5) * s * 4 + Math.sin(f * 3 + t * 3 + p.phase) * s * 0.6;
+                    k === 0 ? ctx.moveTo(bx, by) : ctx.lineTo(bx, by);
+                }
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(x + Math.cos(ang) * -0.5 * s * 4, y + Math.sin(ang) * -0.5 * s * 4, s * 0.5, 0, 6.283);
+                ctx.fill();
+            } else {                                               // copepod: teardrop + antennae + tail fork
+                ctx.beginPath(); ctx.ellipse(x, y, s * 0.9, s * 1.4, 0, 0, 6.283); ctx.fill();
+                const aw = s * 3;
+                ctx.beginPath();
+                ctx.moveTo(x, y - s); ctx.lineTo(x - aw, y - s * 0.4);
+                ctx.moveTo(x, y - s); ctx.lineTo(x + aw, y - s * 0.4);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, y + s * 1.2); ctx.lineTo(x - s * 0.8, y + s * 2.4);
+                ctx.moveTo(x, y + s * 1.2); ctx.lineTo(x + s * 0.8, y + s * 2.4);
+                ctx.stroke();
+            }
+        }
+    }
+
+    // Deterministic clustered 2D layout of the 88 sounds — looks like a UMAP map.
+    _buildEmbedding(n) {
+        const rnd = mulberry32(1337);
+        const C = 6, centers = [];
+        for (let i = 0; i < C; i++) centers.push({ x: 0.14 + 0.72 * rnd(), y: 0.16 + 0.68 * rnd() });
+        const pts = [];
+        for (let k = 0; k < n; k++) {
+            const c = centers[k % C];
+            const ang = rnd() * Math.PI * 2;
+            const rad = 0.11 * Math.sqrt(-2 * Math.log(1e-6 + rnd())); // gaussian-ish
+            pts.push({
+                x: Math.max(0.04, Math.min(0.96, c.x + Math.cos(ang) * rad * 0.6)),
+                y: Math.max(0.06, Math.min(0.94, c.y + Math.sin(ang) * rad * 0.6)),
+                tw: rnd() * Math.PI * 2,
+            });
+        }
+        return pts;
+    }
+
+    hueFor(pitch) {
+        const x = Math.max(0, Math.min(1, Math.log2((pitch || 220) / 27.5) / 7));
+        return 150 + x * 150; // cyan → blue → violet, bioluminescent
+    }
+
+    start() {
+        if (this.running) return;
+        this.running = true;
+        window.addEventListener('resize', this._resize);
+        this._resize();
+        this.ctx.fillStyle = '#02060f';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this._raf = requestAnimationFrame(this._frame);
+    }
+
+    stop() {
+        this.running = false;
+        if (this._raf) cancelAnimationFrame(this._raf);
+        window.removeEventListener('resize', this._resize);
+    }
+
+    _resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const r = this.canvas.getBoundingClientRect();
+        this.canvas.width = Math.max(2, Math.floor(r.width * dpr));
+        this.canvas.height = Math.max(2, Math.floor(r.height * dpr));
+        this.dpr = dpr;
+    }
+
+    noteOn(ev) {
+        const k = ev.key;
+        const e = this.embed[k] || { x: 0.5, y: 0.5 };
+        const pitch = ev.pitchHz || this.freqTable[k] || 220;
+        this.tendrils.push({
+            key: k, x: e.x, y: e.y, hue: this.hueFor(pitch),
+            phase: Math.random() * Math.PI * 2, alive: true, decay: 0,
+        });
+        this.trail.push({ x: e.x, y: e.y, hue: this.hueFor(pitch) });
+        if (this.trail.length > 14) this.trail.shift();
+        if (this.tendrils.length > 40) this.tendrils.shift();
+    }
+
+    noteOff(ev) {
+        for (const t of this.tendrils) if (t.key === ev.key && t.alive) t.alive = false;
+    }
+
+    _level() {
+        if (!this.analyser) return 0.25;
+        this.analyser.getByteFrequencyData(this.bins);
+        let s = 0; for (let i = 0; i < this.bins.length; i++) s += this.bins[i];
+        return (s / this.bins.length) / 255;
+    }
+
+    _frame() {
+        if (!this.running) return;
+        const ctx = this.ctx, W = this.canvas.width, H = this.canvas.height;
+        const t = performance.now() / 1000, lvl = this._level(), dpr = this.dpr;
+
+        // Persistent fade leaves a luminous wake (jellyfish trails).
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = 'rgba(2,6,15,0.12)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'lighter';
+
+        // 1) Latent cloud — the minimal UMAP-like map of all 88 sounds.
+        for (const p of this.embed) {
+            const tw = 0.35 + 0.25 * Math.sin(t * 0.8 + p.tw);
+            ctx.fillStyle = `hsla(200,45%,72%,${0.06 * tw})`;
+            ctx.beginPath(); ctx.arc(p.x * W, p.y * H, 1.4 * dpr, 0, 6.283); ctx.fill();
+        }
+
+        // 1b) Bowhead prey drifting up the water column (copepods + krill).
+        this._drawPlankton(t, lvl);
+
+        // 2) Latent trajectory — faint path threading recently played nodes.
+        for (let i = 1; i < this.trail.length; i++) {
+            const a = this.trail[i - 1], b = this.trail[i];
+            ctx.strokeStyle = `hsla(${b.hue},80%,72%,${0.10 * (i / this.trail.length)})`;
+            ctx.lineWidth = 1 * dpr;
+            ctx.beginPath(); ctx.moveTo(a.x * W, a.y * H); ctx.lineTo(b.x * W, b.y * H); ctx.stroke();
+        }
+
+        // 3) Jellyfish tendrils at each lit node.
+        for (let i = this.tendrils.length - 1; i >= 0; i--) {
+            const td = this.tendrils[i];
+            if (!td.alive) { td.decay += 0.01; if (td.decay >= 1) { this.tendrils.splice(i, 1); continue; } }
+            const fade = td.alive ? 1 : (1 - td.decay);
+            const nodeX = td.x * W;
+            const bob = Math.sin(t * 0.5 + td.phase) * 0.05 * H;   // slow up/down drift
+            const headY = td.y * H + bob - lvl * 0.04 * H;
+            const amp = (6 + lvl * 46) * dpr;
+            const segs = 24, len = H * 0.34;
+
+            for (let s = 0; s < 3; s++) {                            // a few tentacle strands
+                ctx.beginPath();
+                for (let j = 0; j <= segs; j++) {
+                    const f = j / segs, y = headY + f * len;
+                    const sway = Math.sin(t * (0.9 + s * 0.2) + td.phase + f * 5 + s) * amp * (0.25 + f);
+                    const x = nodeX + sway + (s - 1) * 6 * dpr * f;
+                    j === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = `hsla(${td.hue},95%,70%,${0.18 * fade})`;
+                ctx.lineWidth = 2.2 * dpr;
+                ctx.shadowBlur = 14 * dpr; ctx.shadowColor = `hsl(${td.hue},90%,60%)`;
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+
+            const r = (10 + lvl * 26) * dpr * (0.6 + 0.4 * fade);    // glowing bell / node
+            const g = ctx.createRadialGradient(nodeX, headY, 0, nodeX, headY, r);
+            g.addColorStop(0, `hsla(${td.hue},100%,85%,${0.85 * fade})`);
+            g.addColorStop(0.5, `hsla(${td.hue},95%,60%,${0.32 * fade})`);
+            g.addColorStop(1, `hsla(${td.hue},90%,45%,0)`);
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(nodeX, headY, r, 0, 6.283); ctx.fill();
+        }
+
+        this._raf = requestAnimationFrame(this._frame);
+    }
+}
+
 class BowheadPiano {
     constructor() {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Master analyser: every voice routes through here so the in-browser
+        // visualizer can read the combined whale-sound spectrum/level.
+        this.master = this.audioContext.createAnalyser();
+        this.master.fftSize = 1024;
+        this.master.smoothingTimeConstant = 0.82;
+        this.master.connect(this.audioContext.destination);
+        this.visualizer = null; // created lazily when the popup is opened
         this.whaleFiles = [];
         this.audioBuffers = new Map();
         this.fileManifest = null; // Store manifest for lazy loading
@@ -63,6 +373,7 @@ class BowheadPiano {
         this.midiAccess = null;
         this.pitchLockEnabled = true;       // resample each clip onto its key's pitch
         this.clipFrequencies = new Map();   // newName -> precomputed dominant freq (Hz)
+        this.viz = new WhaleVizBridge(TD_WS_URL); // streams notes to TouchDesigner
 
         this.init();
     }
@@ -92,6 +403,14 @@ class BowheadPiano {
         if (pitchLockBtn) {
             pitchLockBtn.addEventListener('click', () => this.togglePitchLock());
         }
+        const vizBtn = document.getElementById('viz-btn');
+        if (vizBtn) vizBtn.addEventListener('click', () => this.toggleVisualizer());
+        const vizClose = document.getElementById('viz-close');
+        if (vizClose) vizClose.addEventListener('click', () => this.closeVisualizer());
+        const vizFs = document.getElementById('viz-fullscreen');
+        if (vizFs) vizFs.addEventListener('click', () => this.toggleVizFullscreen());
+        const tdToggle = document.getElementById('td-link-toggle');
+        if (tdToggle) tdToggle.addEventListener('change', (e) => this.viz.setEnabled(e.target.checked));
 
         // Keyboard support
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -609,14 +928,12 @@ class BowheadPiano {
             // the clip plays at its own arbitrary pitch and "doesn't match" the note.
             const mapping = this.frequencyMap.get(keyIndex);
             const targetFreq = (mapping && mapping.pianoFreq) || PIANO_FREQUENCIES[keyIndex];
+            const clipFreq = await this.getClipFrequency(keyIndex, buffer);
             let playbackRate = 1;
-            if (this.pitchLockEnabled) {
-                const clipFreq = await this.getClipFrequency(keyIndex, buffer);
-                if (clipFreq && isFinite(clipFreq) && clipFreq > 0) {
-                    // Clamp to ±3 octaves so a wildly off clip can't become a silent
-                    // rumble or an inaudible chirp.
-                    playbackRate = Math.max(0.125, Math.min(8, targetFreq / clipFreq));
-                }
+            if (this.pitchLockEnabled && clipFreq && isFinite(clipFreq) && clipFreq > 0) {
+                // Clamp to ±3 octaves so a wildly off clip can't become a silent
+                // rumble or an inaudible chirp.
+                playbackRate = Math.max(0.125, Math.min(8, targetFreq / clipFreq));
             }
             source.playbackRate.value = playbackRate;
 
@@ -634,7 +951,7 @@ class BowheadPiano {
             
             source.connect(gainNode);
             gainNode.connect(compressor);
-            compressor.connect(this.audioContext.destination);
+            compressor.connect(this.master); // → analyser → destination (feeds the visualizer)
             
             // Auto-cleanup when finished
             source.onended = () => {
@@ -646,7 +963,13 @@ class BowheadPiano {
             
             source.start(0);
             this.sendMidiNoteOn(keyIndex);
-            
+
+            // Notify the visualizers (TouchDesigner bridge + in-browser popup).
+            const ev = { key: keyIndex, note: NOTE_NAMES[keyIndex], pitchHz: targetFreq,
+                         clipHz: clipFreq, rate: playbackRate };
+            this.viz.noteOn(ev);
+            if (this.visualizer) this.visualizer.noteOn(ev);
+
             // Store for cleanup
             this.activeSources.set(keyIndex, source);
             
@@ -670,7 +993,10 @@ class BowheadPiano {
             this.activeSources.delete(keyIndex);
         }
         this.sendMidiNoteOff(keyIndex);
-        
+        const offEv = { key: keyIndex, note: NOTE_NAMES[keyIndex] };
+        this.viz.noteOff(offEv);
+        if (this.visualizer) this.visualizer.noteOff(offEv);
+
         // Remove visual feedback
         const keyElement = document.querySelector(`[data-key-index="${keyIndex}"]`);
         if (keyElement) {
@@ -802,6 +1128,42 @@ class BowheadPiano {
         } catch (_) {
             /* file is optional — playKey falls back to in-browser analysis */
         }
+    }
+
+    // ── In-browser visualizer popup ───────────────────────────────────────────
+    toggleVisualizer() {
+        const overlay = document.getElementById('viz-overlay');
+        if (!overlay) return;
+        overlay.classList.contains('open') ? this.closeVisualizer() : this.openVisualizer();
+    }
+
+    openVisualizer() {
+        const overlay = document.getElementById('viz-overlay');
+        const canvas = document.getElementById('viz-canvas');
+        if (!overlay || !canvas) return;
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        if (this.audioContext.state === 'suspended') this.audioContext.resume();
+        if (!this.visualizer) this.visualizer = new WhaleVisualizer(canvas, this.master, PIANO_FREQUENCIES);
+        requestAnimationFrame(() => this.visualizer.start()); // let layout settle so canvas has size
+        const btn = document.getElementById('viz-btn');
+        if (btn) btn.classList.add('active');
+    }
+
+    closeVisualizer() {
+        const overlay = document.getElementById('viz-overlay');
+        if (overlay) { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); }
+        if (this.visualizer) this.visualizer.stop();
+        const btn = document.getElementById('viz-btn');
+        if (btn) btn.classList.remove('active');
+    }
+
+    toggleVizFullscreen() {
+        const overlay = document.getElementById('viz-overlay');
+        if (!overlay) return;
+        if (!document.fullscreenElement) overlay.requestFullscreen && overlay.requestFullscreen();
+        else document.exitFullscreen && document.exitFullscreen();
+        setTimeout(() => this.visualizer && this.visualizer._resize(), 150);
     }
 
     // ── MIDI ─────────────────────────────────────────────────────────────────
