@@ -14,9 +14,11 @@
     header h1 { font-size: 1.05rem; font-weight: 700; }
     header .sub { font-size: 0.78rem; color: #6f93a8; }
     header .spacer { flex: 1; }
-    a.back { color: #36c2ff; text-decoration: none; font-size: 0.85rem;
-             border: 1px solid #1c3e5a; border-radius: 8px; padding: 6px 12px; }
-    a.back:hover { background: #0e2336; }
+    a.back, .ctl { color: #36c2ff; text-decoration: none; font-size: 0.85rem;
+             border: 1px solid #1c3e5a; border-radius: 8px; padding: 6px 12px;
+             background: transparent; cursor: pointer; font-family: inherit; }
+    a.back:hover, .ctl:hover { background: #0e2336; }
+    .ctl.active { background: #0f3460; color: #eafcff; border-color: #36c2ff; }
     #c { display: block; width: 100vw; height: 100vh; cursor: grab; }
     #c:active { cursor: grabbing; }
     #legend { position: fixed; left: 18px; bottom: 18px; z-index: 5;
@@ -40,6 +42,8 @@
     <h1>🧬 Bowhead Latent Space</h1>
     <span class="sub">PaCMAP 3D · 32-D autoencoder · colored by call type · drag to rotate · click a point to hear it</span>
     <span class="spacer"></span>
+    <button id="dim-toggle" class="ctl" title="Toggle 2D / 3D">3D</button>
+    <button id="color-toggle" class="ctl" title="Color by call type or cluster">Color: Type</button>
     <a class="back" href="index.html">← Back to Piano</a>
   </header>
 
