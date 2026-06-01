@@ -61,7 +61,9 @@ class BowheadPiano {
         this.makeyMakeyMode = false;
         this.midiOutput = null;
         this.midiAccess = null;
-        
+        this.pitchLockEnabled = true;       // resample each clip onto its key's pitch
+        this.clipFrequencies = new Map();   // newName -> precomputed dominant freq (Hz)
+
         this.init();
     }
 
@@ -86,7 +88,11 @@ class BowheadPiano {
         if (makeyMakeyBtn) {
             makeyMakeyBtn.addEventListener('click', () => this.toggleMakeyMakeyMode());
         }
-        
+        const pitchLockBtn = document.getElementById('pitch-lock-btn');
+        if (pitchLockBtn) {
+            pitchLockBtn.addEventListener('click', () => this.togglePitchLock());
+        }
+
         // Keyboard support
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
         document.addEventListener('keyup', (e) => this.handleKeyUp(e));
@@ -121,7 +127,11 @@ class BowheadPiano {
             
             const manifest = await response.json();
             this.fileManifest = manifest.files;
-            
+
+            // Load precomputed clip frequencies (from analyze_clips.py) so pitch-lock
+            // is consistent and we avoid re-analyzing every clip in the browser.
+            await this.loadClipFrequencies();
+
             // Use wav-clips directory for fast loading (3-second clips, 0.3MB each)
             this.frequencyMap.clear();
             
@@ -593,7 +603,23 @@ class BowheadPiano {
             const buffer = this.audioBuffers.get(keyIndex);
             const source = this.audioContext.createBufferSource();
             source.buffer = buffer;
-            
+
+            // Pitch-lock: resample the whale clip so its dominant frequency lands
+            // exactly on the key it represents (e.g. D3 → 146.83 Hz). Without this
+            // the clip plays at its own arbitrary pitch and "doesn't match" the note.
+            const mapping = this.frequencyMap.get(keyIndex);
+            const targetFreq = (mapping && mapping.pianoFreq) || PIANO_FREQUENCIES[keyIndex];
+            let playbackRate = 1;
+            if (this.pitchLockEnabled) {
+                const clipFreq = await this.getClipFrequency(keyIndex, buffer);
+                if (clipFreq && isFinite(clipFreq) && clipFreq > 0) {
+                    // Clamp to ±3 octaves so a wildly off clip can't become a silent
+                    // rumble or an inaudible chirp.
+                    playbackRate = Math.max(0.125, Math.min(8, targetFreq / clipFreq));
+                }
+            }
+            source.playbackRate.value = playbackRate;
+
             // Add a gain node for volume boost
             const gainNode = this.audioContext.createGain();
             gainNode.gain.value = 5.0; // 500% volume boost for whale sounds
@@ -731,6 +757,51 @@ class BowheadPiano {
         if (testBtn) testBtn.style.display = 'inline-block';
         const makeyBtn = document.getElementById('makey-makey-btn');
         if (makeyBtn) makeyBtn.style.display = 'inline-block';
+    }
+
+    // ── Pitch-lock ─────────────────────────────────────────────────────────────
+    togglePitchLock() {
+        this.pitchLockEnabled = !this.pitchLockEnabled;
+        const btn = document.getElementById('pitch-lock-btn');
+        if (btn) {
+            btn.textContent = `🎵 Pitch-Lock: ${this.pitchLockEnabled ? 'ON' : 'OFF'}`;
+            btn.classList.toggle('active', this.pitchLockEnabled);
+        }
+        this.updateStatus(
+            this.pitchLockEnabled
+                ? 'Pitch-lock ON — each key now plays its whale clip resampled to that note\'s pitch.'
+                : 'Pitch-lock OFF — clips play at their original (un-matched) pitch.',
+            'info'
+        );
+    }
+
+    /** Resolve a clip's dominant frequency: precomputed JSON → cached → analyze now. */
+    async getClipFrequency(keyIndex, buffer) {
+        const mapping = this.frequencyMap.get(keyIndex);
+        if (mapping && mapping.fileName && this.clipFrequencies.has(mapping.fileName)) {
+            return this.clipFrequencies.get(mapping.fileName);
+        }
+        if (mapping && typeof mapping.whaleFreq === 'number' && mapping.whaleFreq > 0) {
+            return mapping.whaleFreq;
+        }
+        const freq = await this.analyzeFrequency(buffer);
+        if (mapping && freq > 0) mapping.whaleFreq = freq; // cache for subsequent presses
+        return freq;
+    }
+
+    /** Optional: load frequencies precomputed by analyze_clips.py. Non-fatal if absent. */
+    async loadClipFrequencies() {
+        try {
+            const r = await fetch('clip_frequencies.json', { cache: 'no-store' });
+            if (!r.ok) return;
+            const data = await r.json();
+            this.clipFrequencies = new Map(
+                Object.entries(data).map(([name, f]) => [name, Number(f)])
+            );
+            console.log(`Loaded precomputed frequencies for ${this.clipFrequencies.size} clips`);
+        } catch (_) {
+            /* file is optional — playKey falls back to in-browser analysis */
+        }
     }
 
     // ── MIDI ─────────────────────────────────────────────────────────────────

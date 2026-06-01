@@ -1,0 +1,4 @@
+# Python tooling for the Bowhead Whale Piano (clip analysis + pitch-lock export).
+# The web app itself is static and needs no Python at runtime.
+numpy>=1.24
+wandb>=0.16   # optional: only used with `analyze_clips.py --wandb`
