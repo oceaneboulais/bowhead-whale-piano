@@ -13,6 +13,19 @@ const TYPE_COLORS = [
     '#a78bfa', '#22d3ee', '#fb7185', '#facc15', '#94a3b8',
 ];
 const pianoFreq = (k) => 27.5 * Math.pow(2, k / 12); // 88-key, A0 = key 0
+const NOTE_NAMES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+const noteName = (k) => NOTE_NAMES[k % 12] + Math.floor((k + 9) / 12);
+
+// Sonify the embedding: each call type maps to a scale degree of a C-major scale
+// (so points in the same cluster sound related), and the point's vertical
+// position picks the octave (higher in the map = higher pitch).
+const TYPE_DEGREE = [0, 2, 4, 5, 7, 9, 11, 12]; // semitone offset per call type
+function keyForPoint(i) {
+    const deg = TYPE_DEGREE[DATA.t[i] % TYPE_DEGREE.length];
+    const octave = Math.floor(DATA.y[i] * 5);    // 0..4  → ~C2..C6
+    const key = 3 + (octave + 1) * 12 + deg;       // 3 = C1 on an A0-based board
+    return Math.max(0, Math.min(87, key));
+}
 
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
@@ -45,11 +58,11 @@ async function playForPoint(i) {
     if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
     if (actx.state === 'suspended') await actx.resume();
 
-    const key = Math.max(0, Math.min(87, Math.round(DATA.x[i] * 87)));
+    const key = keyForPoint(i);
     const info = manifest[key];
     if (!info) return;
     const name = info.newName;
-    setStatus(`▶ key ${key} · ${name}`);
+    setStatus(`▶ ${DATA.types[DATA.t[i]]} → ${noteName(key)} · ${name}`);
 
     let buf = buffers.get(name);
     if (!buf) {
