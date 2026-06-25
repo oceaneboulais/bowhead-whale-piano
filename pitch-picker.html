@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#050d18">
+  <title>🐋 Whale Pitch Picker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #050d18;
+      color: #c8e6ff;
+      height: 100%;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+      touch-action: pan-y;
+    }
+
+    /* ── App shell ─────────────────────────────────────────────────────────── */
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      /* Use dvh with vh fallback for maximum iOS / Android compat */
+      height: 100dvh;
+      height: 100vh;
+      max-width: 640px;
+      margin: 0 auto;
+      /* Honour iPhone notch / home-indicator */
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+    }
+
+    /* ── Header ────────────────────────────────────────────────────────────── */
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(0,212,255,0.12);
+      background: rgba(5,13,24,0.95);
+    }
+
+    .back-btn {
+      color: #00d4ff;
+      text-decoration: none;
+      font-size: 0.8em;
+      font-weight: 600;
+      padding: 5px 12px;
+      border: 1px solid rgba(0,212,255,0.28);
+      border-radius: 20px;
+      white-space: nowrap;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .back-btn:active { background: rgba(0,212,255,0.18); }
+
+    .app-title {
+      flex: 1;
+      font-size: 1.05em;
+      font-weight: 700;
+      color: #00d4ff;
+      text-shadow: 0 0 18px rgba(0,212,255,0.45);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Instructions ──────────────────────────────────────────────────────── */
+
+    .instructions {
+      text-align: center;
+      font-size: 0.73em;
+      color: rgba(200,230,255,0.5);
+      padding: 5px 14px;
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+
+    /* ── Call-type selector ────────────────────────────────────────────────── */
+
+    .call-selector {
+      display: flex;
+      gap: 5px;
+      padding: 6px 14px;
+      overflow-x: auto;
+      flex-shrink: 0;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .call-selector::-webkit-scrollbar { display: none; }
+
+    .call-btn {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border: 1px solid rgba(0,212,255,0.22);
+      border-radius: 18px;
+      background: rgba(0,212,255,0.05);
+      color: rgba(200,230,255,0.65);
+      font-size: 0.72em;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .call-btn.active {
+      background: rgba(0,212,255,0.18);
+      border-color: rgba(0,212,255,0.7);
+      color: #00d4ff;
+    }
+    .call-btn:active { opacity: 0.75; }
+
+    /* ── Spectrogram section ───────────────────────────────────────────────── */
+
+    .spec-section {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px 14px;
+      min-height: 0;
+    }
+
+    .spec-row {
+      display: flex;
+      gap: 6px;
+      flex: 1 1 0;
+      min-height: 0;
+    }
+
+    /* Frequency ruler on the left */
+    .freq-ruler {
+      width: 46px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 0.6em;
+      color: rgba(0,212,255,0.45);
+      padding: 2px 0;
+      text-align: right;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* The spectrogram image + canvas overlay container */
+    .spec-wrap {
+      flex: 1 1 0;
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid rgba(0,212,255,0.18);
+      min-height: 0;
+      /* cursor is set on canvas */
+    }
+
+    #spec-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill; /* stretch to fill — we own the freq axis */
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
+      filter: brightness(1.2) contrast(1.1) saturate(1.4);
+    }
+
+    /* Canvas overlay sits exactly on top of the image */
+    #spec-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      /* Prevent ALL default touch behaviour on canvas so we own every gesture */
+      touch-action: none;
+    }
+
+    /* ── Frequency display ─────────────────────────────────────────────────── */
+
+    .freq-display-row {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 8px;
+      flex-shrink: 0;
+      min-height: 28px;
+    }
+
+    #freq-display {
+      font-size: 1.5em;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #00d4ff;
+      text-shadow: 0 0 22px rgba(0,212,255,0.55);
+      min-width: 100px;
+      text-align: right;
+      letter-spacing: 0.02em;
+      transition: color 0.1s;
+    }
+
+    #note-display {
+      font-size: 0.9em;
+      font-weight: 600;
+      color: rgba(200,230,255,0.45);
+      min-width: 38px;
+    }
+
+    /* ── Keyboard section ──────────────────────────────────────────────────── */
+
+    .keyboard-section {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 14px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+      border-top: 1px solid rgba(0,212,255,0.12);
+      /* Allow scroll if many keys */
+      max-height: 44vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .keys-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .keys-title {
+      font-size: 0.72em;
+      font-weight: 700;
+      color: rgba(200,230,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    #clear-btn {
+      font-size: 0.68em;
+      font-weight: 600;
+      padding: 4px 11px;
+      border: 1px solid rgba(255,90,90,0.28);
+      border-radius: 12px;
+      background: rgba(255,90,90,0.05);
+      color: rgba(255,140,140,0.65);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: background 0.15s;
+    }
+    #clear-btn:active { background: rgba(255,90,90,0.2); }
+
+    .key-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .key-empty {
+      width: 100%;
+      text-align: center;
+      color: rgba(200,230,255,0.2);
+      font-size: 0.78em;
+      padding: 14px 0 6px;
+    }
+
+    /* Piano-style hold keys */
+    .key-btn {
+      position: relative;
+      /* 4 per row with gaps on default viewport, 5+ on wider */
+      width: calc((100% - 7px * 3) / 4);
+      min-width: 56px;
+      aspect-ratio: 3 / 4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      border: 1.5px solid var(--k-border, rgba(100,200,255,0.25));
+      border-radius: 9px;
+      background: linear-gradient(155deg, var(--k-dark, #0a1628), var(--k-mid, #0f2040));
+      cursor: pointer;
+      /* Pointer Events for mouse + touch */
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.06s, box-shadow 0.08s, filter 0.08s;
+      will-change: transform, filter;
+    }
+
+    .key-btn .key-freq {
+      font-size: clamp(0.75em, 2.5vw, 1em);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: rgba(255,255,255,0.92);
+      line-height: 1;
+    }
+    .key-btn .key-hz {
+      font-size: 0.58em;
+      color: rgba(255,255,255,0.38);
+      line-height: 1;
+      margin-top: 1px;
+    }
+    .key-btn .key-note {
+      font-size: 0.65em;
+      color: rgba(255,255,255,0.5);
+      line-height: 1;
+    }
+
+    /* Delete ×  button */
+    .key-btn .key-del {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255,70,70,0.12);
+      color: rgba(255,140,140,0.6);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      pointer-events: none; /* clicks handled via data-del bubbling */
+    }
+
+    /* Pressed state */
+    .key-btn.pressed {
+      transform: scale(0.92);
+      box-shadow:
+        0 0 16px var(--k-glow, rgba(0,212,255,0.5)),
+        0 0 38px var(--k-glow-wide, rgba(0,212,255,0.2)),
+        inset 0 0 12px rgba(255,255,255,0.08);
+      filter: brightness(1.55) saturate(1.3);
+    }
+
+    @keyframes capture-flash {
+      0%   { transform: scale(1.12); filter: brightness(2.2) saturate(1.5); }
+      100% { transform: scale(1);    filter: brightness(1);  }
+    }
+    .key-btn.flash { animation: capture-flash 0.35s ease-out forwards; }
+
+    @media (min-width: 420px) {
+      .key-btn { width: calc((100% - 7px * 4) / 5); }
+    }
+
+    /* Landscape phone: side-by-side layout */
+    @media (orientation: landscape) and (max-height: 500px) {
+      .app { flex-direction: row; flex-wrap: wrap; max-width: 100%; }
+      .app-header   { width: 100%; }
+      .instructions { width: 100%; padding: 2px 14px; }
+      .call-selector { width: 100%; }
+      .spec-section {
+        flex: 1 1 0;
+        padding-right: 0;
+        border-right: 1px solid rgba(0,212,255,0.1);
+      }
+      .keyboard-section {
+        width: 42%;
+        max-height: none;
+        border-top: none;
+        overflow-y: auto;
+        padding-left: 10px;
+      }
+    }
+
+    /* ── Ripple on capture ─────────────────────────────────────────────────── */
+    .capture-ripple {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+      background: transparent;
+      border: 2px solid rgba(0,212,255,0.8);
+      animation: ripple-out 0.5s ease-out forwards;
+    }
+    @keyframes ripple-out {
+      from { transform: scale(0.2); opacity: 1;  }
+      to   { transform: scale(3.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <a href="index.html" class="back-btn">← Piano</a>
+    <h1 class="app-title">🐋 Pitch Picker</h1>
+  </header>
+
+  <!-- ── Instructions ────────────────────────────────────────────────────── -->
+  <p class="instructions">
+    Drag along the whale call to hear its pitch&nbsp;·&nbsp;lift to capture it as a holdable key
+  </p>
+
+  <!-- ── Call type selector ──────────────────────────────────────────────── -->
+  <div class="call-selector" id="call-selector"></div>
+
+  <!-- ── Spectrogram + ruler ─────────────────────────────────────────────── -->
+  <section class="spec-section" aria-label="Spectrogram pitch picker">
+    <div class="spec-row">
+
+      <!-- Left frequency ruler -->
+      <div class="freq-ruler" id="freq-ruler" aria-hidden="true">
+        <!-- ticks rendered by JS to match actual SPEC_FREQ_MAX -->
+      </div>
+
+      <!-- Spectrogram + overlay canvas -->
+      <div class="spec-wrap" id="spec-wrap">
+        <img
+          id="spec-img"
+          src="spectrogram_samples/input_Type0.png"
+          alt="Bowhead whale call spectrogram – Type 0: Simple FM Upsweep"
+          draggable="false"
+        >
+        <canvas id="spec-canvas" role="application" aria-label="Touch or drag to pick a frequency"></canvas>
+      </div>
+    </div>
+
+    <!-- Live frequency readout -->
+    <div class="freq-display-row">
+      <div id="freq-display" aria-live="polite" aria-atomic="true">— Hz</div>
+      <div id="note-display">—</div>
+    </div>
+  </section>
+
+  <!-- ── Captured keyboard ───────────────────────────────────────────────── -->
+  <section class="keyboard-section" aria-label="Captured pitch keys">
+    <div class="keys-header">
+      <span class="keys-title">Captured Keys</span>
+      <button id="clear-btn" aria-label="Clear all captured keys">Clear All</button>
+    </div>
+    <div id="key-grid" class="key-grid">
+      <div class="key-empty">Drag on the spectrogram above&nbsp;·&nbsp;release to add a key</div>
+    </div>
+  </section>
+
+</div><!-- /.app -->
+
+<script>
+'use strict';
+
+/* ── Call-type catalogue ───────────────────────────────────────────────────── */
+
+const CALL_TYPES = [
+  { id: 0, label: 'Upsweep',    sym: '↑' },
+  { id: 1, label: 'Downsweep',  sym: '↓' },
+  { id: 2, label: 'Tonal',      sym: '—' },
+  { id: 3, label: 'U-shape',    sym: 'U' },
+  { id: 4, label: 'N-shape',    sym: 'N' },
+  { id: 5, label: 'Undulated',  sym: '∿' },
+  { id: 6, label: 'Complex',    sym: '≋' },
+  { id: 7, label: 'Song',       sym: '♩' },
+];
+
+/* ── Spectrogram frequency axis ────────────────────────────────────────────── *
+ *  Derived from the source .mat file parameters:                                *
+ *  FS_NATIVE = 937.5 Hz, N_FFT = 240  →  max freq = 937.5 / 2 = 468.75 Hz    *
+ *  The spectrogram images show 0 Hz at the bottom, ~468 Hz at the top.         */
+const SPEC_FREQ_MIN =   0;    // Hz – bottom edge of every spectrogram image
+const SPEC_FREQ_MAX = 468;    // Hz – top edge
+
+/* ── Note-name helpers ─────────────────────────────────────────────────────── */
+
+const CHROMATIC = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+function freqToNoteName(freq) {
+  if (!Number.isFinite(freq) || freq <= 0) return '—';
+  const semitones = Math.round(12 * Math.log2(freq / 440));
+  const idx = ((semitones % 12) + 12) % 12;
+  // A4 = semitone 0, octave 4.  C4 = semitone -9.
+  const octave = Math.floor((semitones + 9) / 12) + 4;
+  return `${CHROMATIC[idx]}${octave}`;
+}
+
+/* ── Colour helpers ────────────────────────────────────────────────────────── */
+
+function freqToHue(freq) {
+  const t = Math.max(0, Math.min(1,
+    (freq - SPEC_FREQ_MIN) / (SPEC_FREQ_MAX - SPEC_FREQ_MIN)));
+  // cool bioluminescent range: cyan (185°) → blue-violet (290°)
+  return 185 + t * 105;
+}
+
+/* ── Audio context (created lazily inside a user gesture for iOS compat) ───── */
+
+let audioCtx = null;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // iOS silent-buffer unlock: some versions need an actual buffer source
+    // to transition the context from 'suspended' to 'running'.
+    try {
+      const silent = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+      const src = audioCtx.createBufferSource();
+      src.buffer = silent;
+      src.connect(audioCtx.destination);
+      src.start(0);
+    } catch (_) {}
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+/* ── Synthesiser ───────────────────────────────────────────────────────────── *
+ *  Whale-like sustain tone:                                                     *
+ *  • Sine fundamental                                                           *
+ *  • Very quiet 2nd + 3rd harmonic for warmth                                  *
+ *  • Slow LFO vibrato (0.9 Hz, ±0.4 %)                                         *
+ *  • 30 ms attack / configurable release                                        */
+
+function createVoice(freq, vol) {
+  const ctx = ensureAudio();
+  const t0  = ctx.currentTime;
+
+  /* Envelope */
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(0, t0);
+  env.gain.linearRampToValueAtTime(vol, t0 + 0.032);
+  env.connect(ctx.destination);
+
+  /* Warm low-pass */
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'lowpass';
+  filt.frequency.value = Math.min(freq * 5, 2400);
+  filt.Q.value = 0.75;
+  filt.connect(env);
+
+  /* Fundamental */
+  const osc1 = ctx.createOscillator();
+  osc1.type = 'sine';
+  osc1.frequency.value = freq;
+  osc1.connect(filt);
+
+  /* 2nd harmonic – barely audible, adds body */
+  const osc2 = ctx.createOscillator();
+  osc2.type = 'sine';
+  osc2.frequency.value = freq * 2;
+  const g2 = ctx.createGain();
+  g2.gain.value = 0.06;
+  osc2.connect(g2);
+  g2.connect(filt);
+
+  /* 3rd harmonic – whisper level */
+  const osc3 = ctx.createOscillator();
+  osc3.type = 'sine';
+  osc3.frequency.value = freq * 3;
+  const g3 = ctx.createGain();
+  g3.gain.value = 0.02;
+  osc3.connect(g3);
+  g3.connect(filt);
+
+  /* Vibrato LFO */
+  const lfo  = ctx.createOscillator();
+  lfo.type   = 'sine';
+  lfo.frequency.value = 0.9;
+  const lfoG = ctx.createGain();
+  lfoG.gain.value = freq * 0.004;
+  lfo.connect(lfoG);
+  lfoG.connect(osc1.frequency);
+
+  osc1.start(t0);
+  osc2.start(t0);
+  osc3.start(t0);
+  lfo.start(t0);
+
+  let _stopped = false;
+
+  function _doStop(releaseMs) {
+    if (_stopped) return;
+    _stopped = true;
+    const t = ctx.currentTime;
+    const r = releaseMs / 1000;
+    env.gain.cancelScheduledValues(t);
+    env.gain.setValueAtTime(env.gain.value, t);
+    env.gain.linearRampToValueAtTime(0, t + r);
+    setTimeout(() => {
+      try { osc1.stop(); osc2.stop(); osc3.stop(); lfo.stop(); } catch (_) {}
+      try { env.disconnect(); } catch (_) {}
+    }, releaseMs + 60);
+  }
+
+  return {
+    /* Smoothly retune while dragging */
+    setFreq(f) {
+      if (_stopped) return;
+      const t = ctx.currentTime;
+      osc1.frequency.setTargetAtTime(f,     t, 0.022);
+      osc2.frequency.setTargetAtTime(f * 2, t, 0.022);
+      osc3.frequency.setTargetAtTime(f * 3, t, 0.022);
+      filt.frequency.setTargetAtTime(Math.min(f * 5, 2400), t, 0.022);
+      lfoG.gain.setTargetAtTime(f * 0.004, t, 0.022);
+    },
+    stop(quick)  { _doStop(quick ? 45 : 175); },
+    isStopped()  { return _stopped; },
+  };
+}
+
+/* ── State ─────────────────────────────────────────────────────────────────── */
+
+let currentCallType = 0;
+let currentFreq     = null;
+let isExploring     = false;
+let exploreVoice    = null;
+
+let capturedKeys    = [];          // [{ id, freq, noteName }]
+let activeKeyVoices = new Map();   // id → voice
+// For multi-touch key pressing we track which touch drives which key:
+let touchToKey      = new Map();   // touch.identifier → key-id
+let mouseKeyId      = null;        // key-id held by mouse
+
+/* ── DOM refs ──────────────────────────────────────────────────────────────── */
+
+const specWrap   = document.getElementById('spec-wrap');
+const specImg    = document.getElementById('spec-img');
+const specCanvas = document.getElementById('spec-canvas');
+const freqDisp   = document.getElementById('freq-display');
+const noteDisp   = document.getElementById('note-display');
+const keyGrid    = document.getElementById('key-grid');
+const clearBtn   = document.getElementById('clear-btn');
+
+/* ── Canvas helpers ────────────────────────────────────────────────────────── */
+
+let sCtx = null;   // 2-D context, scaled for devicePixelRatio
+let sDpr = 1;
+
+function resizeCanvas() {
+  sDpr = Math.min(window.devicePixelRatio || 1, 3);
+  const rect = specWrap.getBoundingClientRect();
+  const w = Math.max(1, Math.floor(rect.width));
+  const h = Math.max(1, Math.floor(rect.height));
+  specCanvas.width  = w * sDpr;
+  specCanvas.height = h * sDpr;
+  specCanvas.style.width  = w + 'px';
+  specCanvas.style.height = h + 'px';
+  sCtx = specCanvas.getContext('2d');
+  sCtx.scale(sDpr, sDpr);
+  renderRuler(h);
+}
+
+/* Frequency-axis ruler ticks */
+function renderRuler(canvasH) {
+  const ruler = document.getElementById('freq-ruler');
+  ruler.innerHTML = '';
+  const ticks = [SPEC_FREQ_MAX, 350, 234, 117, SPEC_FREQ_MIN];
+  ticks.forEach(hz => {
+    const span = document.createElement('span');
+    span.textContent = hz === 0 ? '0' : hz + ' Hz';
+    ruler.appendChild(span);
+  });
+}
+
+/* Coordinate helpers */
+function clientToCanvas(clientX, clientY) {
+  const rect = specWrap.getBoundingClientRect();
+  return {
+    x: Math.max(0, Math.min(rect.width,  clientX - rect.left)),
+    y: Math.max(0, Math.min(rect.height, clientY - rect.top)),
+  };
+}
+
+function yToFreq(y) {
+  const h = specWrap.clientHeight;
+  const t = 1 - (y / h);   // 0 = bottom (low freq), 1 = top (high freq)
+  return SPEC_FREQ_MIN + t * (SPEC_FREQ_MAX - SPEC_FREQ_MIN);
+}
+
+/* Draw the frequency-cursor line + dot */
+function drawCursor(x, y, freq) {
+  if (!sCtx) return;
+  const W = specWrap.clientWidth;
+  const H = specWrap.clientHeight;
+  const hue = freqToHue(freq);
+
+  sCtx.clearRect(0, 0, W, H);
+
+  /* Horizontal scan-line */
+  sCtx.save();
+  sCtx.strokeStyle = `hsla(${hue},100%,68%,0.55)`;
+  sCtx.lineWidth   = 1;
+  sCtx.setLineDash([5, 5]);
+  sCtx.beginPath();
+  sCtx.moveTo(0, y);
+  sCtx.lineTo(W, y);
+  sCtx.stroke();
+  sCtx.restore();
+
+  /* Touch dot */
+  const dotX = Math.max(12, Math.min(W - 12, x));
+  sCtx.save();
+  sCtx.shadowBlur  = 18;
+  sCtx.shadowColor = `hsl(${hue},100%,65%)`;
+  sCtx.fillStyle   = `hsla(${hue},100%,78%,0.92)`;
+  sCtx.beginPath();
+  sCtx.arc(dotX, y, 9, 0, Math.PI * 2);
+  sCtx.fill();
+  sCtx.restore();
+
+  /* Frequency label */
+  const label = Math.round(freq) + ' Hz';
+  sCtx.font = 'bold 12px system-ui, sans-serif';
+  const lw   = sCtx.measureText(label).width;
+  const lx   = x > W * 0.62 ? x - lw - 14 : x + 18;
+  const ly   = y < 20 ? y + 20 : y > H - 18 ? y - 8 : y - 6;
+
+  /* Pill background */
+  sCtx.save();
+  sCtx.fillStyle = 'rgba(2,8,18,0.72)';
+  _roundRect(sCtx, lx - 5, ly - 13, lw + 10, 18, 4);
+  sCtx.fill();
+  sCtx.restore();
+
+  sCtx.fillStyle = `hsla(${hue},100%,88%,0.96)`;
+  sCtx.fillText(label, lx, ly);
+}
+
+/* Rounded rect helper – works on every browser without roundRect() */
+function _roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function clearCursor() {
+  if (!sCtx) return;
+  sCtx.clearRect(0, 0, specWrap.clientWidth, specWrap.clientHeight);
+}
+
+/* Ripple animation on capture */
+function spawnRipple(x, y) {
+  const r = document.createElement('div');
+  r.className = 'capture-ripple';
+  const size = 32;
+  r.style.left   = (x - size / 2) + 'px';
+  r.style.top    = (y - size / 2) + 'px';
+  r.style.width  = size + 'px';
+  r.style.height = size + 'px';
+  specWrap.appendChild(r);
+  r.addEventListener('animationend', () => r.remove(), { once: true });
+}
+
+/* ── Explore (drag-on-spectrogram) interaction ─────────────────────────────── */
+
+function startExplore(x, y) {
+  ensureAudio();
+  isExploring = true;
+  const freq = yToFreq(y);
+  currentFreq = freq;
+  updateDisplay(freq);
+  drawCursor(x, y, freq);
+  if (exploreVoice) { exploreVoice.stop(true); }
+  exploreVoice = createVoice(freq, 0.48);
+  _lastCanvasPos = { x, y };
+}
+
+function moveExplore(x, y) {
+  if (!isExploring) return;
+  const freq = yToFreq(y);
+  currentFreq = freq;
+  updateDisplay(freq);
+  drawCursor(x, y, freq);
+  if (exploreVoice) exploreVoice.setFreq(freq);
+  _lastCanvasPos = { x, y };
+}
+
+let _lastCanvasPos = { x: 0, y: 0 };
+
+function endExplore() {
+  if (!isExploring) return;
+  isExploring = false;
+
+  if (exploreVoice) { exploreVoice.stop(); exploreVoice = null; }
+  clearCursor();
+  updateDisplay(null);
+
+  if (currentFreq !== null && currentFreq > 5) {
+    captureKey(currentFreq, _lastCanvasPos.x, _lastCanvasPos.y);
+  }
+  currentFreq = null;
+}
+
+function cancelExplore() {
+  isExploring = false;
+  if (exploreVoice) { exploreVoice.stop(true); exploreVoice = null; }
+  clearCursor();
+  updateDisplay(null);
+  currentFreq = null;
+}
+
+function updateDisplay(freq) {
+  if (freq === null) {
+    freqDisp.textContent = '— Hz';
+    noteDisp.textContent = '—';
+  } else {
+    freqDisp.textContent = Math.round(freq) + ' Hz';
+    noteDisp.textContent = '~' + freqToNoteName(freq);
+  }
+}
+
+/* ── Spectrogram touch events ──────────────────────────────────────────────── */
+/* passive:false lets us prevent default scroll/zoom on the canvas             */
+
+specCanvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.changedTouches[0];
+  const { x, y } = clientToCanvas(t.clientX, t.clientY);
+  startExplore(x, y);
+}, { passive: false });
+
+specCanvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const t = e.changedTouches[0];
+  const { x, y } = clientToCanvas(t.clientX, t.clientY);
+  moveExplore(x, y);
+}, { passive: false });
+
+specCanvas.addEventListener('touchend',   e => { e.preventDefault(); endExplore();    }, { passive: false });
+specCanvas.addEventListener('touchcancel',e => { e.preventDefault(); cancelExplore(); }, { passive: false });
+
+/* ── Spectrogram mouse events ──────────────────────────────────────────────── */
+
+specCanvas.addEventListener('mousedown', e => {
+  e.preventDefault();
+  const { x, y } = clientToCanvas(e.clientX, e.clientY);
+  startExplore(x, y);
+});
+
+specCanvas.addEventListener('mousemove', e => {
+  if (!isExploring) return;
+  const { x, y } = clientToCanvas(e.clientX, e.clientY);
+  moveExplore(x, y);
+});
+
+specCanvas.addEventListener('mouseup',    () => endExplore());
+specCanvas.addEventListener('mouseleave', () => { if (isExploring) endExplore(); });
+
+/* ── Key capture ───────────────────────────────────────────────────────────── */
+
+let _keyIdCounter = 0;
+
+function captureKey(freq, canvasX, canvasY) {
+  const id = 'wk-' + (++_keyIdCounter);
+  capturedKeys.push({ id, freq, noteName: freqToNoteName(freq) });
+  renderKeys();
+
+  /* Haptic feedback on Android (no-op on iOS/desktop) */
+  if (navigator.vibrate) navigator.vibrate(28);
+
+  /* Ripple on the spectrogram at capture point */
+  if (canvasX !== undefined) spawnRipple(canvasX, canvasY);
+
+  /* Flash the newly-created key */
+  requestAnimationFrame(() => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('flash');
+    el.addEventListener('animationend', () => el.classList.remove('flash'), { once: true });
+  });
+}
+
+function removeKey(id) {
+  const v = activeKeyVoices.get(id);
+  if (v) { v.stop(true); activeKeyVoices.delete(id); }
+  capturedKeys = capturedKeys.filter(k => k.id !== id);
+  renderKeys();
+}
+
+/* ── Keys render ───────────────────────────────────────────────────────────── */
+
+function renderKeys() {
+  if (capturedKeys.length === 0) {
+    keyGrid.innerHTML = '<div class="key-empty">Drag on the spectrogram above&nbsp;·&nbsp;release to add a key</div>';
+    return;
+  }
+  keyGrid.innerHTML = '';
+  for (const k of capturedKeys) {
+    const hue = freqToHue(k.freq);
+    const el  = document.createElement('div');
+    el.id          = k.id;
+    el.className   = 'key-btn';
+    el.dataset.id  = k.id;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', `${Math.round(k.freq)} Hz, approximately ${k.noteName}. Hold to play.`);
+    el.style.cssText = [
+      `--k-dark:${`hsl(${hue},55%,8%)`}`,
+      `--k-mid:${`hsl(${hue},50%,14%)`}`,
+      `--k-border:${`hsla(${hue},80%,60%,0.28)`}`,
+      `--k-glow:${`hsla(${hue},100%,65%,0.55)`}`,
+      `--k-glow-wide:${`hsla(${hue},90%,55%,0.22)`}`,
+    ].join(';');
+    el.innerHTML =
+      `<div class="key-freq">${Math.round(k.freq)}</div>` +
+      `<div class="key-hz">Hz</div>` +
+      `<div class="key-note">~${k.noteName}</div>` +
+      `<div class="key-del" data-del="${k.id}" aria-hidden="true">×</div>`;
+    keyGrid.appendChild(el);
+  }
+}
+
+/* ── Key note on/off ───────────────────────────────────────────────────────── */
+
+function startKeyNote(id) {
+  if (activeKeyVoices.has(id)) return;
+  const k = capturedKeys.find(c => c.id === id);
+  if (!k) return;
+  const v = createVoice(k.freq, 0.58);
+  activeKeyVoices.set(id, v);
+  const el = document.getElementById(id);
+  if (el) el.classList.add('pressed');
+}
+
+function stopKeyNote(id) {
+  const v = activeKeyVoices.get(id);
+  if (v) { v.stop(); activeKeyVoices.delete(id); }
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('pressed');
+}
+
+/* ── Key interaction: Pointer Events (mouse + touch, unified) ──────────────── *
+ *  setPointerCapture ensures pointerup fires even if finger slides off the      *
+ *  key element — essential for reliable note release on mobile.                 */
+
+keyGrid.addEventListener('pointerdown', e => {
+  /* Delete button: handled by click below, skip here */
+  if (e.target.closest('[data-del]')) return;
+
+  const keyEl = e.target.closest('.key-btn');
+  if (!keyEl || !keyEl.dataset.id) return;
+
+  /* Prevent ghost mouse events after touch on iOS */
+  e.preventDefault();
+
+  const id = keyEl.dataset.id;
+
+  /* Capture so pointerup always fires on this element */
+  try { keyEl.setPointerCapture(e.pointerId); } catch (_) {}
+
+  startKeyNote(id);
+
+  function up(ev) {
+    if (ev.pointerId !== e.pointerId) return;
+    stopKeyNote(id);
+    keyEl.removeEventListener('pointerup',     up);
+    keyEl.removeEventListener('pointercancel', up);
+    keyEl.removeEventListener('pointerleave',  up);
+  }
+  keyEl.addEventListener('pointerup',     up);
+  keyEl.addEventListener('pointercancel', up);
+  /* Also catch leave in case capture is lost */
+  keyEl.addEventListener('pointerleave',  up);
+}, { passive: false });
+
+/* Delete via click (works on mouse and tap) */
+keyGrid.addEventListener('click', e => {
+  const del = e.target.closest('[data-del]');
+  if (del) removeKey(del.dataset.del);
+});
+
+/* ── Clear all ─────────────────────────────────────────────────────────────── */
+
+clearBtn.addEventListener('click', () => {
+  activeKeyVoices.forEach(v => v.stop(true));
+  activeKeyVoices.clear();
+  touchToKey.clear();
+  capturedKeys = [];
+  renderKeys();
+});
+
+/* ── Call-type selector ────────────────────────────────────────────────────── */
+
+function buildCallSelector() {
+  const sel = document.getElementById('call-selector');
+  CALL_TYPES.forEach(ct => {
+    const btn = document.createElement('button');
+    btn.className = 'call-btn' + (ct.id === 0 ? ' active' : '');
+    btn.textContent = `${ct.sym} ${ct.label}`;
+    btn.setAttribute('aria-pressed', ct.id === 0 ? 'true' : 'false');
+    btn.addEventListener('click', () => {
+      currentCallType = ct.id;
+      specImg.src = `spectrogram_samples/input_Type${ct.id}.png`;
+      specImg.alt = `Bowhead whale call spectrogram – Type ${ct.id}: ${ct.label}`;
+      document.querySelectorAll('.call-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === ct.id);
+        b.setAttribute('aria-pressed', i === ct.id ? 'true' : 'false');
+      });
+      clearCursor();
+    });
+    sel.appendChild(btn);
+  });
+}
+
+/* ── Resize handling ───────────────────────────────────────────────────────── */
+
+const ro = new ResizeObserver(() => resizeCanvas());
+ro.observe(specWrap);
+specImg.addEventListener('load', resizeCanvas);
+if (specImg.complete) resizeCanvas();
+
+/* ── Keyboard shortcuts (desktop) ─────────────────────────────────────────── *
+ *  Number keys 1-8 switch call type.                                            *
+ *  Digit/letter keys mapped to captured keys for keyboard jam.                  */
+
+const KB_MAP = ['a','s','d','f','g','h','j','k','l',';','\'','z','x','c','v','b'];
+
+document.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  /* 1-8: switch call type */
+  if (e.key >= '1' && e.key <= '8') {
+    const idx = parseInt(e.key) - 1;
+    document.querySelectorAll('.call-btn')[idx]?.click();
+    return;
+  }
+  /* Letter keys: play captured keys */
+  const ki = KB_MAP.indexOf(e.key.toLowerCase());
+  if (ki !== -1 && capturedKeys[ki]) {
+    startKeyNote(capturedKeys[ki].id);
+  }
+});
+
+document.addEventListener('keyup', e => {
+  const ki = KB_MAP.indexOf(e.key.toLowerCase());
+  if (ki !== -1 && capturedKeys[ki]) {
+    stopKeyNote(capturedKeys[ki].id);
+  }
+});
+
+/* ── Init ──────────────────────────────────────────────────────────────────── */
+
+buildCallSelector();
+renderKeys();
+</script>
+</body>
+</html>
